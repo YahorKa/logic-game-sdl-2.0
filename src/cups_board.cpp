@@ -1,18 +1,14 @@
 #include "cups_board.h"
-#include <iostream>
 
-Cups_Board::Cups_Board(int level) : _f_str{3, 5, {100, 300}}
+Cups_Board::Cups_Board() : _f_str{7, 5, {100, 300}}
 //    _level{level}
 {
-    std::cout<<"constructor"<<std::endl;
     init_level();
-
 }
 
 Cups_Board::~Cups_Board()
 {
-      std::cout<<"destructor"<<std::endl;
-
+    std::cout << "destructor" << std::endl;
 }
 
 Cup *Cups_Board::create_cup(int x, int y, int w, int h)
@@ -22,28 +18,30 @@ Cup *Cups_Board::create_cup(int x, int y, int w, int h)
 
 void Cups_Board::create_cups()
 {
+    _cups_array = new Cup*[_f_str.cups_num];
     for (int i = 0; i < _f_str.cups_num; i++)
     {
-        _cups_array[i] = create_cup(i * 100, 100, 50, 50);
+        *(_cups_array+i) = create_cup(i * 100, 100, 50, 50);
     }
 }
 
-// calls in main_loop
 void Cups_Board::cups_board_render_update(SDL_Renderer *render)
 {
+    SDL_Rect rect;
     for (int i = 0; i < _f_str.cups_num; i++)
     {
-        SDL_SetRenderDrawColor(render, 0x00, 0x00, 255, 255);
-        std::cout<<"i=" << i <<"_cups_array=" << _cups_array[i] << std::endl;
-        SDL_RenderFillRect(render, &_cups_array[i]->rect);
+        if (i == 1)
+        {
+            BLUE_COLOR
+        }
+        else
+        {
+            YELLOW_COLOR
+        }
+        //rect = *_cups_array[i]->get_rect();
+        SDL_RenderFillRect(render, _cups_array[i]->get_rect());
     }
 }
-
-inline Cups_Board::File_level &Cups_Board::get_e_task()
-{
-    return _f_str;
-}
-
 
 bool Cups_Board::read_write_file_task()
 {

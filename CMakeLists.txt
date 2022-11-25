@@ -15,7 +15,8 @@ add_executable(main
  src/cup.h
  src/cups_board.h
  src/cup.cpp
- src/cups_board.cpp)
+ src/cups_board.cpp
+ src/defines.h)
 target_link_libraries(main ${SDL2_LIBRARIES})
 target_include_directories(main PRIVATE ${SRC_DIR})
 

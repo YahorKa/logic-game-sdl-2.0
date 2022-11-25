@@ -4,12 +4,10 @@
 #include <utility>
 #include <vector>
 
-using vector = std::vector<std::pair<int, int>>;
-
 class Cups_Board
 {
 public:
-  Cups_Board(int level);
+  Cups_Board();
   ~Cups_Board();
 
   // enter file structure
@@ -27,21 +25,28 @@ public:
 
   inline File_level &get_e_task();
 
-
   bool read_write_file_task();
+
   inline void draw_cup();
+
   inline Cup ** get_array_addr(){
     return _cups_array;
   }
 
-  Cup* create_cup(int x, int y, int w, int h);
   // calls in main_loop
   void cups_board_render_update(SDL_Renderer *render);
 
 private:
+
   void move_cup();
+
   void create_cups();
+  // create single cup
+  Cup*  create_cup(int x, int y, int w, int h);
+
   File_level _f_str;
+  SDL_Color _color;
   int _level;
-  Cup *_cups_array[];
+  Cup ** _cups_array;
+
 };

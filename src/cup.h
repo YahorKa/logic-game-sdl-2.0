@@ -1,19 +1,23 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 #include "SDL_rect.h"
 #include <SDL2/SDL.h>
+#include "defines.h"
 
 class Cup
 {
 public:
     Cup(int x, int y, int w, int h);
+virtual ~Cup(){};
 
-    // bool render(float x, float y);
-    SDL_Rect rect;
+    virtual inline const SDL_Rect* get_rect(){
+        return &rect;
+    }
+    uint8_t num{8};
 
 private:
-    float _cord_x, _cord_y, _w, _h;
-
-    Cup *_cup;
+    SDL_Rect rect;
+   
 };
