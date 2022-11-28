@@ -1,6 +1,6 @@
 #include "cups_board.h"
 
-Cups_Board::Cups_Board() : _f_str{7, 5, {100, 300}}
+Cups_Board::Cups_Board()
 //    _level{level}
 {
     init_level();
@@ -8,9 +8,9 @@ Cups_Board::Cups_Board() : _f_str{7, 5, {100, 300}}
 
 Cups_Board::~Cups_Board()
 {
-    std::cout << "destructor" << std::endl;
+    //std::cout << "destructor" << std::endl;
 }
-
+ // create single cup
 Cup *Cups_Board::create_cup(int x, int y, int w, int h)
 {
     return new Cup(x, y, w, h);
@@ -18,8 +18,8 @@ Cup *Cups_Board::create_cup(int x, int y, int w, int h)
 
 void Cups_Board::create_cups()
 {
-    _cups_array = new Cup*[_f_str.cups_num];
-    for (int i = 0; i < _f_str.cups_num; i++)
+    _cups_array = new Cup*[3];
+    for (int i = 0; i < 3; i++)
     {
         *(_cups_array+i) = create_cup(i * 100, 100, 50, 50);
     }
@@ -27,8 +27,7 @@ void Cups_Board::create_cups()
 
 void Cups_Board::cups_board_render_update(SDL_Renderer *render)
 {
-    SDL_Rect rect;
-    for (int i = 0; i < _f_str.cups_num; i++)
+    for (int i = 0; i < 3; i++)
     {
         if (i == 1)
         {

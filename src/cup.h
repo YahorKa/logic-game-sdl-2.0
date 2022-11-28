@@ -5,6 +5,7 @@
 #include "SDL_rect.h"
 #include <SDL2/SDL.h>
 #include "defines.h"
+#include "file_manager.h"
 
 class Cup
 {

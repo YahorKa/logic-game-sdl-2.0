@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(Cupboards)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(SOURCE_LIB  ${SRC_DIR}/cup.h)
 #include_directories(src)
@@ -16,7 +16,9 @@ add_executable(main
  src/cups_board.h
  src/cup.cpp
  src/cups_board.cpp
- src/defines.h)
+ src/defines.h
+ src/file_manager.h
+ src/file_manager.cpp)
 target_link_libraries(main ${SDL2_LIBRARIES})
 target_include_directories(main PRIVATE ${SRC_DIR})
 
