@@ -34,8 +34,7 @@ int main(int argc, char *argv[])
     }
     catch(...)
     {
-        std::cout << "cath ext :: ";
-
+        std::cout << "cath ext :: "<<std::endl;
     }
     
     while (true)
@@ -46,8 +45,6 @@ int main(int argc, char *argv[])
         SDL_RenderClear(render);
         //pass render to update 
         cups_board_stage.cups_board_render_update(render);
-        //std::cout<<"addr"<<cups_board_stage.get_array_addr()<< std::endl;
-
         if (SDL_PollEvent(&windowEvent))
         {
             if (SDL_QUIT == windowEvent.type)

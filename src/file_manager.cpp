@@ -10,36 +10,54 @@ void File_Manager::get_data(int level)
         }
     }
     _level_base_path /= (std::to_string(level) + "level.txt");
-    file_level.open(_level_base_path);
-    if (!file_level)
+    file_stream.open(_level_base_path);
+    if (!file_stream)
     {
         std::cout << "cant open" << std::endl;
     }
-    copy_lvl_fields(file_level);
+    copy_lvl_fields(file_stream);
 }
 
 void File_Manager::copy_lvl_fields(ifstream &fields)
 {
     string stream;
+    // get number of cups
     getline(fields, stream);
     _file_level.cups_num = stoi(stream);
+    // get number of all existing points
     getline(fields, stream);
     _file_level.points_num = stoi(stream);
-
-    // create vector_points
-    
+    // get coordinates of all existing points
     for (auto i = 0; i < _file_level.points_num; i++)
     {
-        //istream temp;
-        getline(fields, stream, ',');
+        getline(fields, stream);
         _file_level.points_array.push_back(stream);
     }
+    // get starting positions of all cups
+    getline(fields, stream);
+    std::istringstream iline(stream);
+    for (auto i = 0; i < _file_level.cups_num; i++)
+    {
+        getline(iline, stream, ',');
+        _file_level.start_cups_pos.push_back(stoi(stream));
+    }
+    // get winning position of all cups
+    getline(fields, stream);
+    iline.str(stream);
+    iline.seekg(0);
+    for (auto i = 0; i < _file_level.cups_num; i++)
+    {
+        getline(iline, stream, ',');
+        _file_level.winning_cups_pos.push_back(stoi(stream));
+    }
+    // get number of conenctions
+    getline(fields, stream);
+    _file_level.number_of_connections = stoi(stream);
+    // get pair of connections
+    while (!fields.eof())
+    {
         getline(fields, stream);
-            std::cout << stream<< std::endl;
-        getline(fields, stream,',');
-        getline(fields, stream);
-
-        _file_level.start_cups_pos.push_back(stream);
-    std::cout << stream<< std::endl;
-   // std::cout << std::to_string(_file_level.points_num) << stream <<std::endl;
+        _file_level.list_of_pair_connections.push_back(stream);
+        std::cout << stream<<std::endl;
+    }
 }

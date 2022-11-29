@@ -10,11 +10,8 @@ public:
   Cups_Board();
   ~Cups_Board();
 
-
-
   // init new level
   void init_level();
-
 
   bool read_write_file_task();
 
