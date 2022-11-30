@@ -4,6 +4,7 @@
 
 // nedd to trasfer to enum class settings
 const int WIDTH = 800, HEIGHT = 600;
+int mouse_cord_x, mouse_cord_y;
 
 int main(int argc, char *argv[])
 {
@@ -15,7 +16,7 @@ int main(int argc, char *argv[])
         std::cout << "Could not create window: " << SDL_GetError() << std::endl;
         return 1;
     }
-    Cups_Board cups_board_stage {};
+    Cups_Board cups_board_stage{};
     SDL_Event windowEvent;
     SDL_Renderer *render = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (render == nullptr)
@@ -23,14 +24,14 @@ int main(int argc, char *argv[])
         std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
         return 1;
     }
-    
+
     while (true)
     {
 
         // set general color or texture (white or similar)
-        SDL_SetRenderDrawColor(render, 0xFF, 0xFF,  0xFF,  0xFF);
+        SDL_SetRenderDrawColor(render, 0xFF, 0xFF, 0xFF, 0xFF);
         SDL_RenderClear(render);
-        //pass render to update 
+        // pass render to update
         cups_board_stage.cups_board_render_update(render);
         if (SDL_PollEvent(&windowEvent))
         {
@@ -38,11 +39,20 @@ int main(int argc, char *argv[])
             {
                 break;
             }
+            if (windowEvent.type == SDL_MOUSEMOTION)
+            {
+                SDL_GetMouseState(&mouse_cord_x, &mouse_cord_y);
+                // std::cout << mouse_cord_x << mouse_cord_y<< std::endl;
+            }
+            if (windowEvent.type == SDL_MOUSEBUTTONDOWN)
+            {
+                cups_board_stage.handle_mouse(mouse_cord_x, mouse_cord_y);
+            }
         }
-        //render
+        // render
         SDL_RenderPresent(render);
     }
-
+    // SDL_Delay(500);
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(render);
     SDL_Quit();
