@@ -21,6 +21,7 @@ void File_Manager::get_data(int level)
 void File_Manager::copy_lvl_fields(ifstream &fields)
 {
     string stream;
+    _file_level = {};
     // get number of cups
     getline(fields, stream);
     _file_level.cups_num = stoi(stream);
@@ -58,6 +59,16 @@ void File_Manager::copy_lvl_fields(ifstream &fields)
     {
         getline(fields, stream);
         _file_level.list_of_pair_connections.push_back(stream);
-        std::cout << stream<<std::endl;
+       // std::cout << stream<<std::endl;
     }
 }
+
+    int get_int_from_str(int number,string str){
+        int res;
+        istringstream buf(str);
+        //getline(buf,res,',');
+        // buf >> res;
+        // std::cout<<res;
+        // string pair;
+        // pair = str;
+    }

@@ -1,7 +1,7 @@
 //#include <SDL2/SDL.h>
 #pragma once
+
 #include "cup.h"
-#include <utility>
 
 
 class Cups_Board
@@ -11,9 +11,9 @@ public:
   ~Cups_Board();
 
   // init new level
-  void init_level();
+  void init_level(int lvl);
 
-  bool read_write_file_task();
+  bool read_write_file_task(int lvl);
 
   inline void draw_cup();
 
@@ -27,10 +27,10 @@ public:
 private:
 
   void move_cup();
-
+  vector<int> find_cups_cord(int _i);
   void create_cups();
  
-  Cup*  create_cup(int x, int y, int w, int h);
+  Cup*  create_cup(int sequence);
   SDL_Color _color;
   int _level;
   Cup ** _cups_array;
