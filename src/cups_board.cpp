@@ -48,11 +48,9 @@ void Cups_Board::create_paths(SDL_Renderer *render)
         int x, y, x1, y1;
         pair<string, string> pair;
         string temp;
-        istringstream buf(it);
-        getline(buf, temp, ',');
-        pair.first = level_manager._file_level.points_array[stoi(temp) - 1];
-        getline(buf, temp, ',');
-        pair.second = level_manager._file_level.points_array[stoi(temp) - 1];
+        istringstream buf;
+        pair.first = level_manager._file_level.points_array[it.first - 1];
+        pair.second = level_manager._file_level.points_array[it.second - 1];
         buf.str(pair.first);
         buf.seekg(0);
         getline(buf, temp, ',');
@@ -123,7 +121,7 @@ void Cups_Board::show_available_move(const SDL_Rect *rec)
     //  find point`s number
     int number_point = find_number_point(rec->x + (rec->w / 2), rec->y + (rec->h / 2));
     // chek all paths paths
-    get_available_paths(number_point);
+    //get_available_paths(number_point);
     //  draw availible cups
 }
 int Cups_Board::find_number_point(int rect_x, int rect_y)
@@ -147,42 +145,42 @@ int Cups_Board::find_number_point(int rect_x, int rect_y)
     return -1;
 }
 
-vector<int> Cups_Board::get_available_paths(int number_point)
-{
-    vector<int> path_buf;
-    for (auto it : level_manager._file_level.list_of_pair_connections)
-    {
-        string temp;
-        int temp_int;
-        istringstream buf(it);
-        getline(buf, temp, ',');
-        temp_int = stoi(temp);
-        if (stoi(temp) == number_point)
-        {
-            getline(buf, temp, ',');
-            // check is this point free
-            if (check_point_free(stoi(temp)))
-            {
-                path_buf.push_back(stoi(temp));
-            }
+// vector<int> Cups_Board::get_available_paths(int number_point)
+// {
+//     vector<int> path_buf;
+//     for (auto it : level_manager._file_level.list_of_pair_connections)
+//     {
+//         string temp;
+//         int temp_int;
+//         istringstream buf(it);
+//         getline(buf, temp, ',');
+//         temp_int = stoi(temp);
+//         if (stoi(temp) == number_point)
+//         {
+//             getline(buf, temp, ',');
+//             // check is this point free
+//             if (check_point_free(stoi(temp)))
+//             {
+//                 path_buf.push_back(stoi(temp));
+//             }
 
-            cout << temp << endl;
-            path_buf.push_back(stoi(temp));
-        }
-        getline(buf, temp, ',');
-        if (stoi(temp) == number_point)
-        {
-            if (check_point_free(stoi(temp)))
-            {
-                path_buf.push_back(stoi(temp));
-            }
-            cout << temp_int << endl;
-            path_buf.push_back(temp_int);
-        }
-    }
-    // cout << path_buf.capacity() << endl;
-    return path_buf;
-}
+//             cout << temp << endl;
+//             path_buf.push_back(stoi(temp));
+//         }
+//         getline(buf, temp, ',');
+//         if (stoi(temp) == number_point)
+//         {
+//             if (check_point_free(stoi(temp)))
+//             {
+//                 path_buf.push_back(stoi(temp));
+//             }
+//             cout << temp_int << endl;
+//             path_buf.push_back(temp_int);
+//         }
+//     }
+//     // cout << path_buf.capacity() << endl;
+//     return path_buf;
+// }
 
 bool Cups_Board::check_point_free(int point_number)
 {

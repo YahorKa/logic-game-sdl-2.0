@@ -26,7 +26,7 @@ public:
         vector<uint8_t> start_cups_pos;
         vector<uint8_t> winning_cups_pos;
         uint8_t         number_of_connections;
-        vector<string>  list_of_pair_connections;
+        vector<pair<int,int>>  list_of_pair_connections;
     } Enter_Data;
 
     // inline Enter_Data &get_e_task()

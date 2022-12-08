@@ -58,7 +58,11 @@ void File_Manager::copy_lvl_fields(ifstream &fields)
     while (!fields.eof())
     {
         getline(fields, stream);
-        _file_level.list_of_pair_connections.push_back(stream);
-       // std::cout << stream<<std::endl;
+        istringstream buf(stream);
+        string val1, val2;
+        getline(buf, val1, ',');
+        getline(buf, val2, ',');
+        _file_level.list_of_pair_connections.push_back(pair<int,int>{stoi(val1),stoi(val2)});
+        // std::cout << stream<<std::endl;
     }
 }
