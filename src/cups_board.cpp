@@ -19,7 +19,7 @@ Cup *Cups_Board::create_cup(int sequence)
     int x, y;
     // get starting codr of cups (take away in separate function)
     string temp;
-    string xy_cord = level_manager.get_e_task().points_array[level_manager.get_e_task().start_cups_pos[sequence] - 1];
+    string xy_cord = level_manager._file_level.points_array[level_manager._file_level.start_cups_pos[sequence] - 1];
     istringstream buf(xy_cord);
     getline(buf, temp, ',');
     x = stoi(temp);
@@ -30,8 +30,8 @@ Cup *Cups_Board::create_cup(int sequence)
 
 void Cups_Board::create_cups()
 {
-    _cups_array = new Cup *[level_manager.get_e_task().cups_num];
-    for (int i = 0; i < level_manager.get_e_task().cups_num; i++)
+    _cups_array = new Cup *[level_manager._file_level.cups_num];
+    for (int i = 0; i < level_manager._file_level.cups_num; i++)
     {
         *(_cups_array + i) = create_cup(i);
     }
@@ -41,8 +41,8 @@ void Cups_Board::create_paths(SDL_Renderer *render)
 {
     // set color of paths
     SDL_SetRenderDrawColor(render, 135, 206, 250, 0);
-    //_paths_cord.resize(level_manager.get_e_task().number_of_connections);
-    for (auto it : level_manager.get_e_task().list_of_pair_connections)
+    //_paths_cord.resize(level_manager._file_level.number_of_connections);
+    for (auto it : level_manager._file_level.list_of_pair_connections)
     {
         // get pair of paths connections in string format
         int x, y, x1, y1;
@@ -50,9 +50,9 @@ void Cups_Board::create_paths(SDL_Renderer *render)
         string temp;
         istringstream buf(it);
         getline(buf, temp, ',');
-        pair.first = level_manager.get_e_task().points_array[stoi(temp) - 1];
+        pair.first = level_manager._file_level.points_array[stoi(temp) - 1];
         getline(buf, temp, ',');
-        pair.second = level_manager.get_e_task().points_array[stoi(temp) - 1];
+        pair.second = level_manager._file_level.points_array[stoi(temp) - 1];
         buf.str(pair.first);
         buf.seekg(0);
         getline(buf, temp, ',');
@@ -75,7 +75,7 @@ void Cups_Board::cups_board_render_update(SDL_Renderer *render)
     // Draw paths. Unfothenetly we should perfom equlations in this func for static path, the beter way set away this func in init func
     create_paths(render);
     // Draw cups
-    for (int i = 0; i < level_manager.get_e_task().cups_num; i++)
+    for (int i = 0; i < level_manager._file_level.cups_num; i++)
     {
         if (_cups_array[i]->get_touch())
         {
@@ -93,7 +93,7 @@ void Cups_Board::cups_board_render_update(SDL_Renderer *render)
 void Cups_Board::handle_mouse(int x, int y)
 {
     SDL_Point mouse_cord{x, y};
-    int num = level_manager.get_e_task().cups_num;
+    int num = level_manager._file_level.cups_num;
     for (int i = 0; i < num; i++)
     {
         if (SDL_PointInRect(&mouse_cord, _cups_array[i]->get_rect()))
@@ -131,7 +131,7 @@ void Cups_Board::show_available_move(const SDL_Rect *rec)
 }
 int Cups_Board::find_number_point(int rect_x, int rect_y)
 {
-    for (auto it = level_manager.get_e_task().points_array.begin(); it != level_manager.get_e_task().points_array.end(); it++)
+    for (auto it = level_manager._file_level.points_array.begin(); it != level_manager._file_level.points_array.end(); it++)
     {
         string temp;
         istringstream buf(*it);
@@ -143,7 +143,7 @@ int Cups_Board::find_number_point(int rect_x, int rect_y)
 
         if ((rect_x == x) && (rect_y == y))
         {
-            return (it - level_manager.get_e_task().points_array.begin() + 1);
+            return (it - level_manager._file_level.points_array.begin() + 1);
         }
     }
     cout << "ERROR CANT FIND POINT" << endl;

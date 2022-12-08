@@ -14,6 +14,7 @@ class File_Manager
 public:
     void get_data(int level);
     void copy_lvl_fields(ifstream &fields);
+    friend class Cups_Board;
     // enter file structure
 
     typedef struct Enter_Data_t
@@ -28,12 +29,10 @@ public:
         vector<string>  list_of_pair_connections;
     } Enter_Data;
 
-    inline Enter_Data &get_e_task()
-    {
-        return _file_level;
-    }
-
-    int get_int_from_str(int number,string str);
+    // inline Enter_Data &get_e_task()
+    // {
+    //     return _file_level;
+    // }
 
 private:
     ifstream file_stream; // read level file

@@ -62,13 +62,3 @@ void File_Manager::copy_lvl_fields(ifstream &fields)
        // std::cout << stream<<std::endl;
     }
 }
-
-    int get_int_from_str(int number,string str){
-        int res;
-        istringstream buf(str);
-        //getline(buf,res,',');
-        // buf >> res;
-        // std::cout<<res;
-        // string pair;
-        // pair = str;
-    }
