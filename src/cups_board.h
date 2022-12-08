@@ -15,13 +15,15 @@ public:
   void init_level(int lvl);
   void cups_board_render_update(SDL_Renderer *);
   void handle_mouse(int x,int y);
+  int find_number_point(int, int);
+  vector<int> get_available_paths(int);
 
 private:
   int _level;
   void create_cups();
   Cup*  create_cup(int sequence);
   void create_paths(SDL_Renderer *);
-  void show_available_move(SDL_Point&);
+  void show_available_move(const SDL_Rect*);
   Cup ** _cups_array;
   SDL_Renderer *_paths;
 };

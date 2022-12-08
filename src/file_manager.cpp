@@ -2,7 +2,7 @@
 
 void File_Manager::get_data(int level)
 {
-    for (auto &iter : filesystem::current_path()) // must be iterator not paths
+    for (auto &iter : filesystem::current_path())
     {
         if (iter.compare("build"))
         {
