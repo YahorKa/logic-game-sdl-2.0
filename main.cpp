@@ -4,11 +4,25 @@
 
 // nedd to trasfer to enum class settings
 const int WIDTH = 800, HEIGHT = 600;
-int mouse_cord_x, mouse_cord_y;
+int mouse_cord_x, mouse_cord_y, button_click = 0;
+SDL_Event windowEvent;
+int test(void *ptr)
+{
+    std::cout << "have tread" << std::endl;
+    // while (1)
+    // {
+
+    // }
+    return 0;
+}
 
 int main(int argc, char *argv[])
 {
-    SDL_Init(SDL_INIT_EVERYTHING);
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0)
+    {
+        cout << "Can't init SDL: " << SDL_GetError() << endl;
+        return false;
+    }
     SDL_Window *window = SDL_CreateWindow("Cupboards", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
     // Check that the window was successfully created
     if (NULL == window)
@@ -16,8 +30,9 @@ int main(int argc, char *argv[])
         std::cout << "Could not create window: " << SDL_GetError() << std::endl;
         return 1;
     }
+    SDL_Thread *thread;
+    thread = SDL_CreateThread(test, "testMultiThread", nullptr);
     Cups_Board cups_board_stage{};
-    SDL_Event windowEvent;
     SDL_Renderer *render = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (render == nullptr)
     {
@@ -27,7 +42,7 @@ int main(int argc, char *argv[])
 
     while (true)
     {
-
+        float t = SDL_GetTicks();
         // set general color or texture (white or similar)
         SDL_SetRenderDrawColor(render, 0xFF, 0xFF, 0xFF, 0xFF);
         SDL_RenderClear(render);
@@ -39,18 +54,18 @@ int main(int argc, char *argv[])
             {
                 break;
             }
-            if (windowEvent.type == SDL_MOUSEMOTION)
-            {
-                SDL_GetMouseState(&mouse_cord_x, &mouse_cord_y);
-                // std::cout << mouse_cord_x << mouse_cord_y<< std::endl;
-            }
             if (windowEvent.type == SDL_MOUSEBUTTONDOWN)
             {
-                cups_board_stage.handle_mouse(mouse_cord_x, mouse_cord_y);
+                cups_board_stage.handle_mouse(windowEvent.button.x, windowEvent.button.y);
             }
         }
         // render
         SDL_RenderPresent(render);
+        t = 1000/(SDL_GetTicks()-t);
+        cout.precision(1);
+        if (t>100){
+        std::cout<< fixed<<"FPS:"<< t <<std::endl;
+        }
     }
     // SDL_Delay(500);
     SDL_DestroyWindow(window);

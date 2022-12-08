@@ -11,28 +11,17 @@ class Cups_Board
 public:
   Cups_Board();
   ~Cups_Board();
-
   // init new level
   void init_level(int lvl);
-
-  bool read_write_file_task(int lvl);
-
-  inline Cup ** get_array_addr(){
-    return _cups_array;
-  }
-
-  // calls in main_loop
-  void cups_board_render_update(SDL_Renderer *render);
+  void cups_board_render_update(SDL_Renderer *);
   void handle_mouse(int x,int y);
 
 private:
-
-  void move_cup();
-  vector<int> find_cups_cord(int _i);
+  int _level;
   void create_cups();
   Cup*  create_cup(int sequence);
-  //SDL_Color _colors[256];
-  int _level;
+  void create_paths(SDL_Renderer *);
+  void show_available_move(SDL_Point&);
   Cup ** _cups_array;
-
+  SDL_Renderer *_paths;
 };
