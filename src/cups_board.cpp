@@ -72,7 +72,7 @@ void Cups_Board::create_paths(SDL_Renderer *render)
 
 void Cups_Board::cups_board_render_update(SDL_Renderer *render)
 {
-    // Draw paths. Unfothenetly we should perfom equlations in this func for static path, the beter way set away this func in init func
+    // Draw paths. Unfothenetly we should perfom equlations every tick, the beter way is get away this func from init func
     create_paths(render);
     // Draw cups
     for (int i = 0; i < level_manager._file_level.cups_num; i++)
@@ -120,13 +120,10 @@ void Cups_Board::handle_mouse(int x, int y)
 void Cups_Board::show_available_move(const SDL_Rect *rec)
 {
     // std::cout << rec->x + rec->w / 2 << rec->y + rec->h / 2 << endl;
-    //  find number of point
-
+    //  find point`s number
     int number_point = find_number_point(rec->x + (rec->w / 2), rec->y + (rec->h / 2));
-    std::cout << number_point << endl;
     // chek all paths paths
     get_available_paths(number_point);
-
     //  draw availible cups
 }
 int Cups_Board::find_number_point(int rect_x, int rect_y)
@@ -139,7 +136,7 @@ int Cups_Board::find_number_point(int rect_x, int rect_y)
         int x = stoi(temp);
         getline(buf, temp, ',');
         int y = stoi(temp);
-        std::cout << x << y << rect_x << rect_y << std::endl;
+        // std::cout << x << y << rect_x << rect_y << std::endl;
 
         if ((rect_x == x) && (rect_y == y))
         {
@@ -149,11 +146,57 @@ int Cups_Board::find_number_point(int rect_x, int rect_y)
     cout << "ERROR CANT FIND POINT" << endl;
     return -1;
 }
-vector<int> Cups_Board::get_available_paths(int)
+
+vector<int> Cups_Board::get_available_paths(int number_point)
 {
-   //for (auto it: level_manager.get_e_task.)
-    return vector<int>{};
+    vector<int> path_buf;
+    for (auto it : level_manager._file_level.list_of_pair_connections)
+    {
+        string temp;
+        int temp_int;
+        istringstream buf(it);
+        getline(buf, temp, ',');
+        temp_int = stoi(temp);
+        if (stoi(temp) == number_point)
+        {
+            getline(buf, temp, ',');
+            // check is this point free
+            if (check_point_free(stoi(temp)))
+            {
+                path_buf.push_back(stoi(temp));
+            }
+
+            cout << temp << endl;
+            path_buf.push_back(stoi(temp));
+        }
+        getline(buf, temp, ',');
+        if (stoi(temp) == number_point)
+        {
+            if (check_point_free(stoi(temp)))
+            {
+                path_buf.push_back(stoi(temp));
+            }
+            cout << temp_int << endl;
+            path_buf.push_back(temp_int);
+        }
+    }
+    // cout << path_buf.capacity() << endl;
+    return path_buf;
 }
+
+bool Cups_Board::check_point_free(int point_number)
+{
+    for (int i = 0; i < level_manager._file_level.cups_num; i++)
+    {
+        if ((point_number) == find_number_point(_cups_array[i]->get_rect()->x + (_cups_array[i]->get_rect()->w) / 2,
+                                                _cups_array[i]->get_rect()->y + (_cups_array[i]->get_rect()->h) / 2))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 void Cups_Board::init_level(int lvl)
 {
     if (lvl > 1)

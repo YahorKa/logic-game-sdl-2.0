@@ -17,6 +17,7 @@ public:
   void handle_mouse(int x,int y);
   int find_number_point(int, int);
   vector<int> get_available_paths(int);
+  bool check_point_free(int);
 
 private:
   int _level;
