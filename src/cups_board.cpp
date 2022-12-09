@@ -142,8 +142,6 @@ void Cups_Board::handle_mouse(int x, int y)
                 }
             }
             _free_paths.available_places = {};
-            //_cups_array[i]->move(x, y);
-            // need to go one of implicit cups
         }
     }
 }
@@ -187,9 +185,10 @@ vector<int> Cups_Board::show_available_move(const SDL_Rect *rec)
     int number_point = find_number_point(rec->x + (rec->w / 2), rec->y + (rec->h / 2));
     // chek all paths paths
     vector<int> available_places;
+    auto search_paths = [&](int num){
     for (auto it : level_manager._file_level.list_of_pair_connections)
     {
-        if (it.first == number_point)
+        if (it.first == num)
         {
             if (check_point_free(it.second))
             {
@@ -197,7 +196,7 @@ vector<int> Cups_Board::show_available_move(const SDL_Rect *rec)
                 available_places.push_back(it.second);
             }
         }
-        if (it.second == number_point)
+        if (it.second == num)
         {
             if (check_point_free(it.first))
             {
@@ -205,7 +204,12 @@ vector<int> Cups_Board::show_available_move(const SDL_Rect *rec)
                 available_places.push_back(it.first);
             }
         }
-    }
+    }};
+    search_paths(number_point);
+    // for (auto it: available_places)
+    // {
+
+    // }
     return available_places;
     //  draw availible cups
 }

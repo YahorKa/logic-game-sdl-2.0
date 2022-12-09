@@ -32,8 +32,8 @@ private:
   
   int _level;
   int _num_cup_is_checked; // number of cup is cheked [1 ... N]
-  Cup **_cups_array;
-  Cup *implicit_array;
+  Cup **_cups_array;      
+  Cup *implicit_array;     // array of available move  
   SDL_Renderer *_paths;
   Cups_board_free_paths _free_paths;
 };

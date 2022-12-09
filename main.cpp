@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
         // render
         SDL_RenderPresent(render);
         fps = 1000/(SDL_GetTicks()-fps);
-        cout<<fps<<endl;
+        //cout<<fps<<endl;
     }
     // SDL_Delay(500);
     SDL_DestroyWindow(window);
