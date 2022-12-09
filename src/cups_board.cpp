@@ -94,7 +94,7 @@ void Cups_Board::cups_board_render_update(SDL_Renderer *render)
             SDL_Rect rect = get_rect_point(*it);
             implicit_cups[it - _free_paths.available_places.begin()] = *new Cup(get_rect_point(*it).x, get_rect_point(*it).y,
                                                                                 50, 50, *_free_paths.color);
-            cout << "x " << rect.x << "y " << rect.y << " capacity " << _free_paths.available_places.capacity() << " size " << sizeof(*implicit_cups) << endl;
+            // cout << "x " << rect.x << "y " << rect.y << " capacity " << _free_paths.available_places.capacity() << " size " << sizeof(*implicit_cups) << endl;
             SDL_RenderFillRect(render, &rect);
         }
         delete[] implicit_cups;
@@ -107,30 +107,42 @@ void Cups_Board::handle_mouse(int x, int y)
     int num = level_manager._file_level.cups_num;
     for (int i = 0; i < num; i++)
     {
+        // check DO WE touch on of cups ?
         if (SDL_PointInRect(&mouse_cord, _cups_array[i]->get_rect()))
         {
             if (_cups_array[i]->get_touch())
-            {
+            { // This cup was already touched and catch again, therefor set touch (0)
                 _cups_array[i]->set_touch(0);
                 _free_paths.available_places = {};
-                num_cup_is_checked = 0;
+                _num_cup_is_checked = 0;
                 return;
             }
             else
-            {
+            { // catch one of cups ! 
                 _cups_array[i]->set_touch(1);
                 _free_paths.available_places = show_available_move(_cups_array[i]->get_rect());
                 _free_paths.color = _cups_array[i]->get_color();
-                num_cup_is_checked = i + 1;
+                _num_cup_is_checked = i + 1;
                 return;
             }
         }
         else if (_cups_array[i]->get_touch())
-        {
+        { //  This cup was already touched, and we want to move it of set touch (0)
+            SDL_Rect rect;
             _cups_array[i]->set_touch(0);
-            num_cup_is_checked = 0;
+            _num_cup_is_checked = 0;
+            for (auto it : _free_paths.available_places)
+            {   // check DO WE can to move it ?
+                rect = get_rect_point(it);
+                if (SDL_PointInRect(&mouse_cord, &rect))
+                {
+                    _cups_array[i]->move(rect.x + (rect.w / 2), rect.y + (rect.h / 2));
+                    _free_paths.available_places = {};
+                    return;
+                }
+            }
             _free_paths.available_places = {};
-            _cups_array[i]->move(x, y);
+            //_cups_array[i]->move(x, y);
             // need to go one of implicit cups
         }
     }
@@ -187,21 +199,19 @@ vector<int> Cups_Board::get_available_paths(int number_point) // silly function
         {
             if (check_point_free(it.second))
             {
-                cout << it.second << endl;
+                // cout << it.second << endl;
                 available_places.push_back(it.second);
-                // get_available_paths(it.second);
             }
         }
         if (it.second == number_point)
         {
             if (check_point_free(it.first))
             {
-                cout << it.first << endl;
+                // cout << it.first << endl;
                 available_places.push_back(it.first);
             }
         }
     }
-
     return available_places;
 }
 

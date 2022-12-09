@@ -32,7 +32,7 @@ private:
   };
   
   int _level;
-  int num_cup_is_checked; // number of cup is cheked [1 ... N]
+  int _num_cup_is_checked; // number of cup is cheked [1 ... N]
   Cup **_cups_array;
   Cup *implicit_array;
   SDL_Renderer *_paths;
