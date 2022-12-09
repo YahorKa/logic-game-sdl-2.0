@@ -11,7 +11,12 @@
 class Cup
 {
 public:
-    Cup(int x, int y, int w, int h,const SDL_Color &_color);
+    Cup(int x, int y, int w, int h, const SDL_Color &_color);
+    Cup();
+    // Cup &operator=(Cup &other)
+    // {
+    //     return *this;
+    // }
     virtual ~Cup(){};
     SDL_Color color;
     virtual inline const SDL_Rect *get_rect()

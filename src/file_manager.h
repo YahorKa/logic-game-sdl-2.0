@@ -20,13 +20,13 @@ public:
     typedef struct Enter_Data_t
     {
         /* data */
-        uint8_t         cups_num;
-        uint8_t         points_num;
-        vector<string>  points_array;
-        vector<uint8_t> start_cups_pos;
-        vector<uint8_t> winning_cups_pos;
-        uint8_t         number_of_connections;
-        vector<pair<int,int>>  list_of_pair_connections;
+        uint8_t                 cups_num;
+        uint8_t                 points_num;
+        vector<string>          points_array;
+        vector<uint8_t>         start_cups_pos;
+        vector<uint8_t>         winning_cups_pos;
+        uint8_t                 number_of_connections;
+        vector<pair<int,int>>   list_of_pair_connections;
     } Enter_Data;
 
     // inline Enter_Data &get_e_task()

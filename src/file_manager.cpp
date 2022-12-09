@@ -54,7 +54,7 @@ void File_Manager::copy_lvl_fields(ifstream &fields)
     // get number of conenctions
     getline(fields, stream);
     _file_level.number_of_connections = stoi(stream);
-    // get pair of connections
+    // get pair of connections in int format
     while (!fields.eof())
     {
         getline(fields, stream);

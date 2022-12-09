@@ -3,7 +3,7 @@
 Cup::Cup(int x, int y, int w, int h, const SDL_Color &color) : rect{x, y, w, h}, _color{color}
 {
 }
-
+Cup::Cup() = default;
 void Cup::set_touch(bool touch)
 {
     if (touch)
@@ -27,6 +27,6 @@ bool Cup::get_touch()
 }
 void Cup::move(int x, int y)
 {
-    rect.x =x-rect.w/2;
-    rect.y =y-rect.h/2;
+    rect.x = x - rect.w / 2;
+    rect.y = y - rect.h / 2;
 }

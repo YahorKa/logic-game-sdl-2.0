@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
     while (true)
     {
-        float t = SDL_GetTicks();
+        float fps = SDL_GetTicks();
         // set general color or texture (white or similar)
         SDL_SetRenderDrawColor(render, 0xFF, 0xFF, 0xFF, 0xFF);
         SDL_RenderClear(render);
@@ -61,11 +61,7 @@ int main(int argc, char *argv[])
         }
         // render
         SDL_RenderPresent(render);
-        t = 1000/(SDL_GetTicks()-t);
-        cout.precision(1);
-        if (t>100){
-        std::cout<< fixed<<"FPS:"<< t <<std::endl;
-        }
+        fps = 1000/(SDL_GetTicks()-fps);
     }
     // SDL_Delay(500);
     SDL_DestroyWindow(window);

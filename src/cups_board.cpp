@@ -13,27 +13,22 @@ Cups_Board::~Cups_Board()
 {
     // std::cout << "destructor" << std::endl;
 }
-// create single cup
-Cup *Cups_Board::create_cup(int sequence)
-{
-    int x, y;
-    // get starting codr of cups (take away in separate function)
-    string temp;
-    string xy_cord = level_manager._file_level.points_array[level_manager._file_level.start_cups_pos[sequence] - 1];
-    istringstream buf(xy_cord);
-    getline(buf, temp, ',');
-    x = stoi(temp);
-    getline(buf, temp, ',');
-    y = stoi(temp);
-    return new Cup(x - CUPS_H / 2, y - CUPS_W / 2, CUPS_H, CUPS_W, colors_list.list[sequence]);
-}
 
 void Cups_Board::create_cups()
 {
     _cups_array = new Cup *[level_manager._file_level.cups_num];
     for (int i = 0; i < level_manager._file_level.cups_num; i++)
     {
-        *(_cups_array + i) = create_cup(i);
+        int x, y;
+        // get starting codr of cups (take away in separate function)
+        string temp;
+        string xy_cord = level_manager._file_level.points_array[level_manager._file_level.start_cups_pos[i] - 1];
+        istringstream buf(xy_cord);
+        getline(buf, temp, ',');
+        x = stoi(temp);
+        getline(buf, temp, ',');
+        y = stoi(temp);
+        *(_cups_array + i) = new Cup(x - CUPS_H / 2, y - CUPS_W / 2, CUPS_H, CUPS_W, colors_list.list[i]);
     }
 }
 
@@ -70,6 +65,7 @@ void Cups_Board::create_paths(SDL_Renderer *render)
 
 void Cups_Board::cups_board_render_update(SDL_Renderer *render)
 {
+    SDL_Rect rect; // rect to draw available move
     // Draw paths. Unfothenetly we should perfom equlations every tick, the beter way is get away this func from init func
     create_paths(render);
     // Draw cups
@@ -77,7 +73,7 @@ void Cups_Board::cups_board_render_update(SDL_Renderer *render)
     {
         if (_cups_array[i]->get_touch())
         {
-            SDL_Color color = std::move(colors_list.light_list[i]);
+            SDL_Color color = move(colors_list.light_list[i]);
             SDL_SetRenderDrawColor(render, color.r, color.g, color.b, 255);
         }
         else
@@ -85,6 +81,23 @@ void Cups_Board::cups_board_render_update(SDL_Renderer *render)
             SDL_SetRenderDrawColor(render, _cups_array[i]->get_color()->r, _cups_array[i]->get_color()->g, _cups_array[i]->get_color()->b, 255);
         }
         SDL_RenderFillRect(render, _cups_array[i]->get_rect());
+    }
+
+    // create available cups to move
+    if (_free_paths.available_places.capacity())
+    {
+        Cup *implicit_cups = new Cup[5];
+        implicit_array = implicit_cups;
+        SDL_SetRenderDrawColor(render, _free_paths.color->r, _free_paths.color->g, _free_paths.color->b, 255);
+        for (auto it = _free_paths.available_places.begin(); it != _free_paths.available_places.end(); ++it)
+        {
+            SDL_Rect rect = get_rect_point(*it);
+            implicit_cups[it - _free_paths.available_places.begin()] = *new Cup(get_rect_point(*it).x, get_rect_point(*it).y,
+                                                                                50, 50, *_free_paths.color);
+            cout << "x " << rect.x << "y " << rect.y << " capacity " << _free_paths.available_places.capacity() << " size " << sizeof(*implicit_cups) << endl;
+            SDL_RenderFillRect(render, &rect);
+        }
+        delete[] implicit_cups;
     }
 }
 
@@ -99,31 +112,39 @@ void Cups_Board::handle_mouse(int x, int y)
             if (_cups_array[i]->get_touch())
             {
                 _cups_array[i]->set_touch(0);
+                _free_paths.available_places = {};
+                num_cup_is_checked = 0;
+                return;
             }
             else
             {
                 _cups_array[i]->set_touch(1);
-                show_available_move(_cups_array[i]->get_rect());
+                _free_paths.available_places = show_available_move(_cups_array[i]->get_rect());
+                _free_paths.color = _cups_array[i]->get_color();
+                num_cup_is_checked = i + 1;
+                return;
             }
         }
-        else
-            //_cups_array[i]->set_touch(0);
-            if (_cups_array[i]->get_touch())
-            {
-                _cups_array[i]->set_touch(0);
-                _cups_array[i]->move(x, y);
-            }
+        else if (_cups_array[i]->get_touch())
+        {
+            _cups_array[i]->set_touch(0);
+            num_cup_is_checked = 0;
+            _free_paths.available_places = {};
+            _cups_array[i]->move(x, y);
+            // need to go one of implicit cups
+        }
     }
 }
-void Cups_Board::show_available_move(const SDL_Rect *rec)
+
+vector<int> Cups_Board::show_available_move(const SDL_Rect *rec)
 {
-    // std::cout << rec->x + rec->w / 2 << rec->y + rec->h / 2 << endl;
-    //  find point`s number
     int number_point = find_number_point(rec->x + (rec->w / 2), rec->y + (rec->h / 2));
     // chek all paths paths
-    //get_available_paths(number_point);
+    return get_available_paths(number_point);
     //  draw availible cups
 }
+
+// search number position in points array via coordinate
 int Cups_Board::find_number_point(int rect_x, int rect_y)
 {
     for (auto it = level_manager._file_level.points_array.begin(); it != level_manager._file_level.points_array.end(); it++)
@@ -145,42 +166,44 @@ int Cups_Board::find_number_point(int rect_x, int rect_y)
     return -1;
 }
 
-// vector<int> Cups_Board::get_available_paths(int number_point)
-// {
-//     vector<int> path_buf;
-//     for (auto it : level_manager._file_level.list_of_pair_connections)
-//     {
-//         string temp;
-//         int temp_int;
-//         istringstream buf(it);
-//         getline(buf, temp, ',');
-//         temp_int = stoi(temp);
-//         if (stoi(temp) == number_point)
-//         {
-//             getline(buf, temp, ',');
-//             // check is this point free
-//             if (check_point_free(stoi(temp)))
-//             {
-//                 path_buf.push_back(stoi(temp));
-//             }
+SDL_Rect Cups_Board::get_rect_point(int number_point)
+{
+    int x, y;
+    string val;
+    istringstream buf(level_manager._file_level.points_array[number_point - 1]);
+    getline(buf, val, ',');
+    x = stoi(val);
+    getline(buf, val, ',');
+    y = stoi(val);
+    return SDL_Rect{x - 25, y - 25, 50, 50};
+}
 
-//             cout << temp << endl;
-//             path_buf.push_back(stoi(temp));
-//         }
-//         getline(buf, temp, ',');
-//         if (stoi(temp) == number_point)
-//         {
-//             if (check_point_free(stoi(temp)))
-//             {
-//                 path_buf.push_back(stoi(temp));
-//             }
-//             cout << temp_int << endl;
-//             path_buf.push_back(temp_int);
-//         }
-//     }
-//     // cout << path_buf.capacity() << endl;
-//     return path_buf;
-// }
+vector<int> Cups_Board::get_available_paths(int number_point) // silly function
+{
+    vector<int> available_places;
+    for (auto it : level_manager._file_level.list_of_pair_connections)
+    {
+        if (it.first == number_point)
+        {
+            if (check_point_free(it.second))
+            {
+                cout << it.second << endl;
+                available_places.push_back(it.second);
+                // get_available_paths(it.second);
+            }
+        }
+        if (it.second == number_point)
+        {
+            if (check_point_free(it.first))
+            {
+                cout << it.first << endl;
+                available_places.push_back(it.first);
+            }
+        }
+    }
+
+    return available_places;
+}
 
 bool Cups_Board::check_point_free(int point_number)
 {
@@ -203,5 +226,6 @@ void Cups_Board::init_level(int lvl)
     level_manager.get_data(lvl);
     create_cups();
     // create_paths();
+
     //  create something else
 }

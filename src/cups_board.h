@@ -1,4 +1,4 @@
-//#include <SDL2/SDL.h>
+// #include <SDL2/SDL.h>
 #pragma once
 
 #include "cup.h"
@@ -12,19 +12,29 @@ public:
   Cups_Board();
   ~Cups_Board();
   // init new level
-  void init_level(int lvl);
+
   void cups_board_render_update(SDL_Renderer *);
-  void handle_mouse(int x,int y);
-  int find_number_point(int, int);
-  vector<int> get_available_paths(int);
-  bool check_point_free(int);
+  void handle_mouse(int x, int y);
 
 private:
-  int _level;
   void create_cups();
-  Cup*  create_cup(int sequence);
   void create_paths(SDL_Renderer *);
-  void show_available_move(const SDL_Rect*);
-  Cup ** _cups_array;
+  vector<int> show_available_move(const SDL_Rect *);
+  int find_number_point(int, int);
+  SDL_Rect get_rect_point(int number_point);
+  vector<int> get_available_paths(int);
+  bool check_point_free(int);
+  void init_level(int lvl);
+  struct Cups_board_free_paths
+  {
+    vector<int> available_places;
+    const SDL_Color *color;
+  };
+  
+  int _level;
+  int num_cup_is_checked; // number of cup is cheked [1 ... N]
+  Cup **_cups_array;
+  Cup *implicit_array;
   SDL_Renderer *_paths;
+  Cups_board_free_paths _free_paths;
 };
