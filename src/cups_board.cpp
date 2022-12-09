@@ -118,7 +118,7 @@ void Cups_Board::handle_mouse(int x, int y)
                 return;
             }
             else
-            { // catch one of cups ! 
+            { // catch one of cups !
                 _cups_array[i]->set_touch(1);
                 _free_paths.available_places = show_available_move(_cups_array[i]->get_rect());
                 _free_paths.color = _cups_array[i]->get_color();
@@ -132,7 +132,7 @@ void Cups_Board::handle_mouse(int x, int y)
             _cups_array[i]->set_touch(0);
             _num_cup_is_checked = 0;
             for (auto it : _free_paths.available_places)
-            {   // check DO WE can to move it ?
+            { // check DO WE can to move it ?
                 rect = get_rect_point(it);
                 if (SDL_PointInRect(&mouse_cord, &rect))
                 {
@@ -146,14 +146,6 @@ void Cups_Board::handle_mouse(int x, int y)
             // need to go one of implicit cups
         }
     }
-}
-
-vector<int> Cups_Board::show_available_move(const SDL_Rect *rec)
-{
-    int number_point = find_number_point(rec->x + (rec->w / 2), rec->y + (rec->h / 2));
-    // chek all paths paths
-    return get_available_paths(number_point);
-    //  draw availible cups
 }
 
 // search number position in points array via coordinate
@@ -190,8 +182,10 @@ SDL_Rect Cups_Board::get_rect_point(int number_point)
     return SDL_Rect{x - 25, y - 25, 50, 50};
 }
 
-vector<int> Cups_Board::get_available_paths(int number_point) // silly function
+vector<int> Cups_Board::show_available_move(const SDL_Rect *rec)
 {
+    int number_point = find_number_point(rec->x + (rec->w / 2), rec->y + (rec->h / 2));
+    // chek all paths paths
     vector<int> available_places;
     for (auto it : level_manager._file_level.list_of_pair_connections)
     {
@@ -213,6 +207,7 @@ vector<int> Cups_Board::get_available_paths(int number_point) // silly function
         }
     }
     return available_places;
+    //  draw availible cups
 }
 
 bool Cups_Board::check_point_free(int point_number)

@@ -22,7 +22,6 @@ private:
   vector<int> show_available_move(const SDL_Rect *);
   int find_number_point(int, int);
   SDL_Rect get_rect_point(int number_point);
-  vector<int> get_available_paths(int);
   bool check_point_free(int);
   void init_level(int lvl);
   struct Cups_board_free_paths
