@@ -24,6 +24,7 @@ private:
   SDL_Rect get_rect_point(int number_point);
   bool check_point_free(int);
   bool check_point_repeat(vector<int>, int);
+  bool _check_winning_position();
 
   void init_level(int lvl);
   struct Cups_board_free_paths
@@ -35,7 +36,7 @@ private:
   int _level;
   int _num_cup_is_checked; // number of cup is cheked [1 ... N]
   Cup **_cups_array;
-  Cup *implicit_array; // array of available move
+  Cup *_implicit_array; // array of available move
   SDL_Renderer *_paths;
   Cups_board_free_paths _free_paths;
 };

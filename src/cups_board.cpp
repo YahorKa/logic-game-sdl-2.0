@@ -87,7 +87,7 @@ void Cups_Board::cups_board_render_update(SDL_Renderer *render)
     if (_free_paths.available_places.capacity())
     {
         Cup *implicit_cups = new Cup[_free_paths.available_places.capacity()];
-        implicit_array = implicit_cups;
+        //_implicit_array = implicit_cups;
         SDL_SetRenderDrawColor(render, _free_paths.color->r, _free_paths.color->g, _free_paths.color->b, 255);
         for (auto it = _free_paths.available_places.begin(); it != _free_paths.available_places.end(); ++it)
         {
@@ -98,6 +98,24 @@ void Cups_Board::cups_board_render_update(SDL_Renderer *render)
             SDL_RenderFillRect(render, &rect);
         }
         delete[] implicit_cups;
+    }
+    // Draw wining position, please
+    //Cup *winnimg_pos = new Cup[level_manager._file_level.cups_num];
+    for (int i = 0; i < level_manager._file_level.cups_num; i++)
+    {
+        int x, y, offset_x =400, offset_y=200;
+        SDL_Rect rect;
+        string temp;
+        string xy_cord = level_manager._file_level.points_array[level_manager._file_level.winning_cups_pos[i] - 1];
+        istringstream buf(xy_cord);
+        getline(buf, temp, ',');
+        rect.x = stoi(temp)/1.3+offset_x;
+        getline(buf, temp, ',');
+        rect.y = stoi(temp)/1.3+offset_y;
+        rect.h = 50;
+        rect.w = 50;
+        SDL_SetRenderDrawColor(render, colors_list.list[i].r,colors_list.list[i].g, colors_list.list[i].b, 255);
+        SDL_RenderFillRect(render, &rect);
     }
 }
 
@@ -138,6 +156,10 @@ void Cups_Board::handle_mouse(int x, int y)
                 {
                     _cups_array[i]->move(rect.x + (rect.w / 2), rect.y + (rect.h / 2));
                     _free_paths.available_places = {};
+                    if (_check_winning_position())
+                    {
+                        cout << "WINNNNNNNNNNNNNNNNNER" << endl;
+                    }
                     return;
                 }
             }
@@ -260,4 +282,16 @@ void Cups_Board::init_level(int lvl)
     // create_paths();
 
     //  create something else
+}
+
+bool Cups_Board::_check_winning_position()
+{
+    for (int i = 0; i < level_manager._file_level.cups_num; i++)
+    {
+        int point_number = find_number_point(_cups_array[i]->get_rect()->x + (_cups_array[i]->get_rect()->w) / 2,
+                                             _cups_array[i]->get_rect()->y + (_cups_array[i]->get_rect()->h) / 2);
+        if (point_number != level_manager._file_level.winning_cups_pos[i])
+            return false;
+    }
+    return true;
 }
