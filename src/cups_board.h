@@ -23,17 +23,19 @@ private:
   int find_number_point(int, int);
   SDL_Rect get_rect_point(int number_point);
   bool check_point_free(int);
+  bool check_point_repeat(vector<int>, int);
+
   void init_level(int lvl);
   struct Cups_board_free_paths
   {
     vector<int> available_places;
     const SDL_Color *color;
   };
-  
+
   int _level;
   int _num_cup_is_checked; // number of cup is cheked [1 ... N]
-  Cup **_cups_array;      
-  Cup *implicit_array;     // array of available move  
+  Cup **_cups_array;
+  Cup *implicit_array; // array of available move
   SDL_Renderer *_paths;
   Cups_board_free_paths _free_paths;
 };

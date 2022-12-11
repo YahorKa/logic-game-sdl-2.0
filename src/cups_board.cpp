@@ -86,7 +86,7 @@ void Cups_Board::cups_board_render_update(SDL_Renderer *render)
     // create available cups to move
     if (_free_paths.available_places.capacity())
     {
-        Cup *implicit_cups = new Cup[5];
+        Cup *implicit_cups = new Cup[_free_paths.available_places.capacity()];
         implicit_array = implicit_cups;
         SDL_SetRenderDrawColor(render, _free_paths.color->r, _free_paths.color->g, _free_paths.color->b, 255);
         for (auto it = _free_paths.available_places.begin(); it != _free_paths.available_places.end(); ++it)
@@ -183,9 +183,11 @@ SDL_Rect Cups_Board::get_rect_point(int number_point)
 vector<int> Cups_Board::show_available_move(const SDL_Rect *rec)
 {
     int number_point = find_number_point(rec->x + (rec->w / 2), rec->y + (rec->h / 2));
-    // chek all paths paths
-    vector<int> available_places;
-    auto search_paths = [&](int num){
+    int repeat;
+    // chek all paths
+    vector<int> available_places{};
+    auto search_paths = [&](int num)
+    {
     for (auto it : level_manager._file_level.list_of_pair_connections)
     {
         if (it.first == num)
@@ -193,7 +195,7 @@ vector<int> Cups_Board::show_available_move(const SDL_Rect *rec)
             if (check_point_free(it.second))
             {
                 // cout << it.second << endl;
-                available_places.push_back(it.second);
+                if (check_point_repeat(available_places,it.second))available_places.push_back(it.second);
             }
         }
         if (it.second == num)
@@ -201,17 +203,38 @@ vector<int> Cups_Board::show_available_move(const SDL_Rect *rec)
             if (check_point_free(it.first))
             {
                 // cout << it.first << endl;
-                available_places.push_back(it.first);
+                if (check_point_repeat(available_places,it.first))available_places.push_back(it.first);
             }
         }
-    }};
-    search_paths(number_point);
-    // for (auto it: available_places)
-    // {
+    } };
 
-    // }
+    search_paths(number_point);
+    while (1)
+    {
+        int cap = available_places.capacity();
+        for (auto it : available_places)
+        {
+            search_paths(it);
+        }
+        if (cap == available_places.capacity()) // we found all available move
+        {
+            return available_places;
+        }
+        cap = available_places.capacity();
+    }
+
     return available_places;
     //  draw availible cups
+}
+bool Cups_Board::check_point_repeat(vector<int> v, int num)
+{
+    for (auto it : v)
+    {
+        int count;
+        if (num == it)
+            return 0;
+    }
+    return 1;
 }
 
 bool Cups_Board::check_point_free(int point_number)
