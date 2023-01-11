@@ -15,13 +15,13 @@ public:
 
   void cups_board_render_update(SDL_Renderer *);
   void handle_mouse(int x, int y);
+  static SDL_Rect get_rect_point(int number_point);
 
 private:
   void create_cups();
   void create_paths(SDL_Renderer *);
   vector<int> show_available_move(const SDL_Rect *);
   int find_number_point(int, int);
-  SDL_Rect get_rect_point(int number_point);
   bool check_point_free(int);
   bool check_point_repeat(vector<int>, int);
   bool _check_winning_position();

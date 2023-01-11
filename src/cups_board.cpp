@@ -1,5 +1,6 @@
 #include "cups_board.h"
 
+//thread = SDL_CreateThread(Cup::smoothy_moving, "smoothy_moving", nullptr);
 File_Manager level_manager;
 SDL_colors_t colors_list;
 
@@ -12,6 +13,12 @@ Cups_Board::Cups_Board()
 Cups_Board::~Cups_Board()
 {
     // std::cout << "destructor" << std::endl;
+}
+
+void Cups_Board::init_level(int lvl)
+{
+    level_manager.get_data(lvl);
+    create_cups();
 }
 
 void Cups_Board::create_cups()
@@ -87,20 +94,17 @@ void Cups_Board::cups_board_render_update(SDL_Renderer *render)
     if (_free_paths.available_places.capacity())
     {
         Cup *implicit_cups = new Cup[_free_paths.available_places.capacity()];
-        //_implicit_array = implicit_cups;
         SDL_SetRenderDrawColor(render, _free_paths.color->r, _free_paths.color->g, _free_paths.color->b, 255);
         for (auto it = _free_paths.available_places.begin(); it != _free_paths.available_places.end(); ++it)
         {
             SDL_Rect rect = get_rect_point(*it);
             implicit_cups[it - _free_paths.available_places.begin()] = *new Cup(get_rect_point(*it).x, get_rect_point(*it).y,
                                                                                 50, 50, *_free_paths.color);
-            // cout << "x " << rect.x << "y " << rect.y << " capacity " << _free_paths.available_places.capacity() << " size " << sizeof(*implicit_cups) << endl;
             SDL_RenderFillRect(render, &rect);
         }
         delete[] implicit_cups;
     }
     // Draw wining position, please
-    //Cup *winnimg_pos = new Cup[level_manager._file_level.cups_num];
     for (int i = 0; i < level_manager._file_level.cups_num; i++)
     {
         int x, y, offset_x =400, offset_y=200;
@@ -146,19 +150,26 @@ void Cups_Board::handle_mouse(int x, int y)
         }
         else if (_cups_array[i]->get_touch())
         { //  This cup was already touched, and we want to move it of set touch (0)
-            SDL_Rect rect;
+            SDL_Rect rect , start_rect;
+            int start_point , target_point;
             _cups_array[i]->set_touch(0);
             _num_cup_is_checked = 0;
+            start_rect = *_cups_array[i]->get_rect();
             for (auto it : _free_paths.available_places)
             { // check DO WE can to move it ?
                 rect = get_rect_point(it);
                 if (SDL_PointInRect(&mouse_cord, &rect))
                 {
-                    _cups_array[i]->move(rect.x + (rect.w / 2), rect.y + (rect.h / 2));
+                   // _cups_array[i]->move(rect.x + (rect.w / 2), rect.y + (rect.h / 2));  need to rewrite
+                   start_point = find_number_point(start_rect.x + (rect.w / 2),start_rect.y+ (rect.h / 2) );
+                   target_point = it;
+                   _cups_array[i]->move(start_point,target_point, move(_free_paths.available_places), level_manager._file_level.list_of_pair_connections);
                     _free_paths.available_places = {};
                     if (_check_winning_position())
                     {
-                        cout << "WINNNNNNNNNNNNNNNNNER" << endl;
+                        cout << "You WIN!!!" << endl;
+                        _level ++;
+                        // Clear cups_Board
                     }
                     return;
                 }
@@ -205,7 +216,6 @@ SDL_Rect Cups_Board::get_rect_point(int number_point)
 vector<int> Cups_Board::show_available_move(const SDL_Rect *rec)
 {
     int number_point = find_number_point(rec->x + (rec->w / 2), rec->y + (rec->h / 2));
-    int repeat;
     // chek all paths
     vector<int> available_places{};
     auto search_paths = [&](int num)
@@ -272,18 +282,6 @@ bool Cups_Board::check_point_free(int point_number)
     return true;
 }
 
-void Cups_Board::init_level(int lvl)
-{
-    if (lvl > 1)
-    { // clear dinamic arrays
-    }
-    level_manager.get_data(lvl);
-    create_cups();
-    // create_paths();
-
-    //  create something else
-}
-
 bool Cups_Board::_check_winning_position()
 {
     for (int i = 0; i < level_manager._file_level.cups_num; i++)
@@ -294,4 +292,18 @@ bool Cups_Board::_check_winning_position()
             return false;
     }
     return true;
+}
+
+int Cup::smoothy_moving(int start,int end,Cup* cup){
+
+    SDL_Rect start_rect = Cups_Board::get_rect_point(start);
+    SDL_Rect end_rect =  Cups_Board::get_rect_point(end);
+
+    while (!SDL_RectEquals(&start_rect, &end_rect))
+    {
+       start_rect.x += 1;
+        start_rect.y += 1;
+
+    }
+
 }

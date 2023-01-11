@@ -18,8 +18,7 @@ public:
     //     return *this;
     // }
     virtual ~Cup(){};
-    SDL_Color color;
-    virtual inline const SDL_Rect *get_rect()
+    virtual inline SDL_Rect *get_rect()
     {
         return &rect;
     }
@@ -29,13 +28,15 @@ public:
     {
         return &_color;
     }
-    void move(int x, int y);
+    void move(int, int, vector<int>&&v,vector<pair<int,int>>&);
     bool get_touch();
     void set_touch(bool touch);
 
 private:
     bool is_touching;
+    static int smoothy_moving(int,int,Cup*);
     SDL_Rect rect;
     SDL_Color _color;
     SDL_Color _color_light;
 };
+
