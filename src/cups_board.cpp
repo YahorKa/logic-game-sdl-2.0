@@ -295,7 +295,7 @@ bool Cups_Board::_check_winning_position()
 }
 
 int Cup::smoothy_moving(int start,int end,Cup* cup){
-
+    cout<<"smoothy"<<endl;
     SDL_Rect start_rect = Cups_Board::get_rect_point(start);
     SDL_Rect end_rect =  Cups_Board::get_rect_point(end);
 
@@ -303,7 +303,6 @@ int Cup::smoothy_moving(int start,int end,Cup* cup){
     {
        start_rect.x += 1;
         start_rect.y += 1;
-
     }
-
+    return 0;
 }

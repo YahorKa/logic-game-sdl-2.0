@@ -4,6 +4,7 @@ project(Cupboards)
 set(CMAKE_CXX_STANDARD 17)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(SOURCE_LIB  ${SRC_DIR}/cup.h)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 #include_directories(src)
 
 find_package(SDL2)

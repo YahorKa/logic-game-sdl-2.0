@@ -6,15 +6,6 @@
 const int WIDTH = 800, HEIGHT = 600;
 int mouse_cord_x, mouse_cord_y, button_click = 0;
 SDL_Event windowEvent;
-int test(void *ptr)
-{
-    std::cout << "have tread" << std::endl;
-    // while (1)
-    // {
-
-    // }
-    return 0;
-}
 
 int main(int argc, char *argv[])
 {
@@ -31,7 +22,6 @@ int main(int argc, char *argv[])
         return 1;
     }
     SDL_Thread *thread;
-    thread = SDL_CreateThread(test, "testMultiThread", nullptr);
     Cups_Board cups_board_stage{};
     SDL_Renderer *render = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (render == nullptr)

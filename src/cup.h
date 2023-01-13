@@ -4,6 +4,8 @@
 #include <vector>
 #include "SDL_rect.h"
 #include <SDL2/SDL.h>
+#include "SDL_thread.h"
+#include <thread>
 #include <utility>
 #include "colors.h"
 #include "file_manager.h"
@@ -22,7 +24,6 @@ public:
     {
         return &rect;
     }
-    uint8_t num{8};
 
     virtual inline const SDL_Color *get_color()
     {
@@ -34,7 +35,7 @@ public:
 
 private:
     bool is_touching;
-    static int smoothy_moving(int,int,Cup*);
+    int smoothy_moving(int,int,Cup*);
     SDL_Rect rect;
     SDL_Color _color;
     SDL_Color _color_light;
