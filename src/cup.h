@@ -9,6 +9,7 @@
 #include <utility>
 #include "colors.h"
 #include "file_manager.h"
+#include <atomic>
 
 class Cup
 {
@@ -35,6 +36,7 @@ public:
 
 private:
     bool is_touching;
+    thread *thr;
     int smoothy_moving(int,int,Cup*);
     SDL_Rect rect;
     SDL_Color _color;

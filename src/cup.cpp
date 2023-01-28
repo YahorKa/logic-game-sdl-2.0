@@ -36,7 +36,7 @@ bool Cup::get_touch()
 {
     return is_touching;
 }
-
+atomic<bool> is_done {false};
 void Cup::move(int start, int end, vector<int> &&available_move, vector<pair<int, int>> &available_pair)
 {
 //std::thread thr(smoothy_moving);
@@ -49,11 +49,12 @@ void Cup::move(int start, int end, vector<int> &&available_move, vector<pair<int
                if (find(available_move.begin(),available_move.end(),pair.second) != available_move.end())
                { 
                 // move to point?  smoothy_moving(start, pair.second, this
-                //cout<<pair.second<<endl; 
-                std::thread thread (&Cup::smoothy_moving,this, start, pair.second,this);
-                thread.join();
-                start = pair.second;
-                if (start == end) return;
+                cout<<"pair.second"<<pair.second<<endl; 
+                thr =  new thread(&Cup::smoothy_moving,this, start, pair.second,this);
+                if (start == end) 
+                // delete tread
+                return;
+                move(pair.second, end, std::move(available_move), available_pair);
                }
             }
         }

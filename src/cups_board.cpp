@@ -1,4 +1,5 @@
 #include "cups_board.h"
+#include <unistd.h>               // for linux 
 
 //thread = SDL_CreateThread(Cup::smoothy_moving, "smoothy_moving", nullptr);
 File_Manager level_manager;
@@ -149,9 +150,9 @@ void Cups_Board::handle_mouse(int x, int y)
             }
         }
         else if (_cups_array[i]->get_touch())
-        { //  This cup was already touched, and we want to move it of set touch (0)
-            SDL_Rect rect , start_rect;
-            int start_point , target_point;
+        { //  This cup was already touched, and we want to move it
+            SDL_Rect rect, start_rect;
+            int start_point, target_point;
             _cups_array[i]->set_touch(0);
             _num_cup_is_checked = 0;
             start_rect = *_cups_array[i]->get_rect();
@@ -258,6 +259,7 @@ vector<int> Cups_Board::show_available_move(const SDL_Rect *rec)
     return available_places;
     //  draw availible cups
 }
+
 bool Cups_Board::check_point_repeat(vector<int> v, int num)
 {
     for (auto it : v)
@@ -298,11 +300,15 @@ int Cup::smoothy_moving(int start,int end,Cup* cup){
     cout<<"smoothy"<<endl;
     SDL_Rect start_rect = Cups_Board::get_rect_point(start);
     SDL_Rect end_rect =  Cups_Board::get_rect_point(end);
-
-    while (!SDL_RectEquals(&start_rect, &end_rect))
+    cout<<"start:"<<start<<"end:"<<end<<endl;
+    cout<<"abs(end_rect.y - start_rect.y)"<<(end_rect.x - start_rect.x)/abs(end_rect.x - start_rect.x)<<endl;
+    cout<<"start x:"<<start_rect.x<<"end x:"<<end_rect.x<<(end_rect.x - start_rect.x)/abs(end_rect.x - start_rect.x)<<endl;
+    cout<<"start y:"<<start_rect.y<<"end y:"<<end_rect.y<<(end_rect.y - start_rect.y)/abs(end_rect.y - start_rect.y)<<endl;
+    while (!SDL_RectEquals(cup->get_rect(), &end_rect))
     {
-       start_rect.x += 1;
-        start_rect.y += 1;
+        if (start_rect.x != end_rect.x)  cup->get_rect()->x += (end_rect.x - start_rect.x)/abs(end_rect.x - start_rect.x);
+        if (start_rect.y != end_rect.y)  cup->get_rect()->y += (end_rect.y - start_rect.y)/abs(end_rect.y - start_rect.y);
+        usleep(8000);
     }
     return 0;
 }
