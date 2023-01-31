@@ -1,5 +1,4 @@
 #include "cups_board.h"
-#include <unistd.h>               // for linux 
 
 //thread = SDL_CreateThread(Cup::smoothy_moving, "smoothy_moving", nullptr);
 File_Manager level_manager;
@@ -164,8 +163,10 @@ void Cups_Board::handle_mouse(int x, int y)
                    // _cups_array[i]->move(rect.x + (rect.w / 2), rect.y + (rect.h / 2));  need to rewrite
                    start_point = find_number_point(start_rect.x + (rect.w / 2),start_rect.y+ (rect.h / 2) );
                    target_point = it;
-                   _cups_array[i]->move(start_point,target_point, move(_free_paths.available_places), level_manager._file_level.list_of_pair_connections);
-                    _free_paths.available_places = {};
+                   //_cups_array[i]->move(start_point,target_point, move(_free_paths.available_places), level_manager._file_level.list_of_pair_connections);
+                   cout<<"*cup = "<<_cups_array[i]<<endl;
+                   thr1 = new std::thread(&Cup::move,std::move(_cups_array[i]),start_point,target_point, move(_free_paths.available_places), std::ref(level_manager._file_level.list_of_pair_connections));
+                   // _free_paths.available_places = {};
                     if (_check_winning_position())
                     {
                         cout << "You WIN!!!" << endl;
@@ -297,18 +298,18 @@ bool Cups_Board::_check_winning_position()
 }
 
 int Cup::smoothy_moving(int start,int end,Cup* cup){
-    cout<<"smoothy"<<endl;
     SDL_Rect start_rect = Cups_Board::get_rect_point(start);
     SDL_Rect end_rect =  Cups_Board::get_rect_point(end);
-    cout<<"start:"<<start<<"end:"<<end<<endl;
-    cout<<"abs(end_rect.y - start_rect.y)"<<(end_rect.x - start_rect.x)/abs(end_rect.x - start_rect.x)<<endl;
-    cout<<"start x:"<<start_rect.x<<"end x:"<<end_rect.x<<(end_rect.x - start_rect.x)/abs(end_rect.x - start_rect.x)<<endl;
-    cout<<"start y:"<<start_rect.y<<"end y:"<<end_rect.y<<(end_rect.y - start_rect.y)/abs(end_rect.y - start_rect.y)<<endl;
+    cout<<"*cup = "<<cup<<endl;
+    // cout<<"start x:"<<start_rect.x<<"end x:"<<end_rect.x<<(end_rect.x - start_rect.x)/abs(end_rect.x - start_rect.x)<<endl;
+    // cout<<"start y:"<<start_rect.y<<"end y:"<<end_rect.y<<(end_rect.y - start_rect.y)/abs(end_rect.y - start_rect.y)<<endl;
     while (!SDL_RectEquals(cup->get_rect(), &end_rect))
     {
         if (start_rect.x != end_rect.x)  cup->get_rect()->x += (end_rect.x - start_rect.x)/abs(end_rect.x - start_rect.x);
         if (start_rect.y != end_rect.y)  cup->get_rect()->y += (end_rect.y - start_rect.y)/abs(end_rect.y - start_rect.y);
-        usleep(8000);
+         std::this_thread::sleep_for(std::chrono::milliseconds(10));
+             //cout<<"x: "<<cup->get_rect()->x<<"y: "<<cup->get_rect()->y<<endl;
     }
+    is_done = 1;
     return 0;
 }

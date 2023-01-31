@@ -32,7 +32,7 @@ private:
     vector<int> available_places;
     const SDL_Color *color;
   };
-
+  thread *thr1;
   int _level;
   int _num_cup_is_checked; // number of cup is cheked [1 ... N]
   Cup **_cups_array;

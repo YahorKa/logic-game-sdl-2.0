@@ -43,3 +43,4 @@ private:
     SDL_Color _color_light;
 };
 
+static atomic<bool> is_done = 0;
