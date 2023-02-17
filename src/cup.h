@@ -10,7 +10,12 @@
 #include "colors.h"
 #include "file_manager.h"
 #include <atomic>
+#include <list>
+#include <queue>
 
+enum Dijkstra {
+    INF = 0x3f,
+};
 class Cup
 {
 public:
@@ -30,17 +35,15 @@ public:
     {
         return &_color;
     }
-    void move(int, int, vector<int>&&v,vector<pair<int,int>>&);
+    void move(int, int, vector<int> &&v,deque<int> &&);
     bool get_touch();
     void set_touch(bool touch);
 
 private:
     bool is_touching;
     thread *thr;
-    int smoothy_moving(int,int,Cup*);
+    int smoothy_moving(int, int, Cup *);
     SDL_Rect rect;
     SDL_Color _color;
     SDL_Color _color_light;
 };
-
-static atomic<bool> is_done = 0;
