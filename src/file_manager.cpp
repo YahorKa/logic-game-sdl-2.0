@@ -32,7 +32,12 @@ void File_Manager::copy_lvl_fields(ifstream &fields)
     for (auto i = 0; i < _file_level.points_num; i++)
     {
         getline(fields, stream);
-        _file_level.points_array.push_back(stream);
+        std::istringstream point_pair(stream);
+        string pair_f;
+        string pair_s;
+        getline(point_pair, pair_f, ',');
+        getline(point_pair, pair_s, ',');
+        _file_level.points_array.push_back({stoi(pair_f),stoi(pair_s)});
     }
     // get starting positions of all cups
     getline(fields, stream);
@@ -51,7 +56,7 @@ void File_Manager::copy_lvl_fields(ifstream &fields)
         getline(iline, stream, ',');
         _file_level.winning_cups_pos.push_back(stoi(stream));
     }
-    // get number of conenctions
+    // get number of connections
     getline(fields, stream);
     _file_level.number_of_connections = stoi(stream);
     // get pair of connections in int format
@@ -62,7 +67,7 @@ void File_Manager::copy_lvl_fields(ifstream &fields)
         string val1, val2;
         getline(buf, val1, ',');
         getline(buf, val2, ',');
-        _file_level.list_of_pair_connections.push_back(pair<int,int>{stoi(val1),stoi(val2)});
+        _file_level.list_of_pair_connections.push_back(pair<int, int>{stoi(val1), stoi(val2)});
         // std::cout << stream<<std::endl;
     }
 }

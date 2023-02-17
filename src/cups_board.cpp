@@ -30,13 +30,9 @@ void Cups_Board::create_cups()
     {
         int x, y;
         // get starting codr of cups (take away in separate function)
-        string temp;
-        string xy_cord = level_manager._file_level.points_array[level_manager._file_level.start_cups_pos[i] - 1];
-        istringstream buf(xy_cord);
-        getline(buf, temp, ',');
-        x = stoi(temp);
-        getline(buf, temp, ',');
-        y = stoi(temp);
+        pair<int,int> xy_cord = level_manager._file_level.points_array[level_manager._file_level.start_cups_pos[i] - 1];
+        x = xy_cord.first;
+        y = xy_cord.second;
         *(_cups_array + i) = new Cup(x - CUPS_H / 2, y - CUPS_W / 2, CUPS_H, CUPS_W, colors_list.list[i]);
     }
 }
@@ -50,23 +46,13 @@ void Cups_Board::create_paths(SDL_Renderer *render)
     {
         // get pair of paths connections in string format
         int x, y, x1, y1;
-        pair<string, string> pair;
-        string temp;
-        istringstream buf;
-        pair.first = level_manager._file_level.points_array[it.first - 1];
-        pair.second = level_manager._file_level.points_array[it.second - 1];
-        buf.str(pair.first);
-        buf.seekg(0);
-        getline(buf, temp, ',');
-        x = stoi(temp);
-        getline(buf, temp, ',');
-        y = stoi(temp);
-        buf.str(pair.second);
-        buf.seekg(0);
-        getline(buf, temp, ',');
-        x1 = stoi(temp);
-        getline(buf, temp, ',');
-        y1 = stoi(temp);
+        pair<int, int> pair;
+        pair = level_manager._file_level.points_array[it.first - 1];
+        x = pair.first;
+        y = pair.second;
+        pair = level_manager._file_level.points_array[it.second - 1];
+        x1 = pair.first;
+        y1 = pair.second;
         SDL_RenderDrawLine(render, x, y, x1, y1);
         //_paths_cord.push_back(pair);
     }
@@ -106,18 +92,14 @@ void Cups_Board::cups_board_render_update(SDL_Renderer *render)
         }
         delete[] implicit_cups;
     }
-    // Draw wining position, please
+    // Draw wining position, please NEED REFACTORING!!!!!
     for (int i = 0; i < level_manager._file_level.cups_num; i++)
     {
         int x, y, offset_x =400, offset_y=200;
         SDL_Rect rect;
-        string temp;
-        string xy_cord = level_manager._file_level.points_array[level_manager._file_level.winning_cups_pos[i] - 1];
-        istringstream buf(xy_cord);
-        getline(buf, temp, ',');
-        rect.x = stoi(temp)/1.3+offset_x;
-        getline(buf, temp, ',');
-        rect.y = stoi(temp)/1.3+offset_y;
+        pair<int,int> xy_cord = level_manager._file_level.points_array[level_manager._file_level.winning_cups_pos[i] - 1];
+        rect.x =xy_cord.first/1.3+offset_x;
+        rect.y = xy_cord.second/1.3+offset_y;
         rect.h = 50;
         rect.w = 50;
         SDL_SetRenderDrawColor(render, colors_list.list[i].r,colors_list.list[i].g, colors_list.list[i].b, 255);
@@ -191,19 +173,18 @@ void Cups_Board::handle_mouse(int x, int y)
 // search number position in points array via coordinate
 int Cups_Board::find_number_point(int rect_x, int rect_y)
 {
+    //NEED REFACTORING!!!
     for (auto it = level_manager._file_level.points_array.begin(); it != level_manager._file_level.points_array.end(); it++)
     {
-        string temp;
-        istringstream buf(*it);
-        getline(buf, temp, ',');
-        int x = stoi(temp);
-        getline(buf, temp, ',');
-        int y = stoi(temp);
 
-        if ((rect_x == x) && (rect_y == y))
-        {
+        int x = (*it).first;
+        int y = (*it).second;
+        SDL_Rect rect {rect_x , rect_y, 50 , 50};
+        SDL_Point p {x,y};
+        if (SDL_PointInRect(&p, &rect)){
             return (it - level_manager._file_level.points_array.begin() + 1);
         }
+
     }
     cout << "ERROR CANT FIND POINT" << endl;
     return -1;
@@ -213,11 +194,9 @@ SDL_Rect Cups_Board::get_rect_point(int number_point)
 {
     int x, y;
     string val;
-    istringstream buf(level_manager._file_level.points_array[number_point - 1]);
-    getline(buf, val, ',');
-    x = stoi(val);
-    getline(buf, val, ',');
-    y = stoi(val);
+    pair<int, int> pair(level_manager._file_level.points_array[number_point - 1]);
+    x = pair.first;
+    y = pair.second;
     return SDL_Rect{x - 25, y - 25, 50, 50};
 }
 
@@ -297,12 +276,12 @@ bool Cups_Board::_check_winning_position()
     {
         int point_number = find_number_point(_cups_array[i]->get_rect()->x + (_cups_array[i]->get_rect()->w) / 2,
                                              _cups_array[i]->get_rect()->y + (_cups_array[i]->get_rect()->h) / 2);
-        if (point_number != level_manager._file_level.winning_cups_pos[i])
         cout << "p.n = " << point_number << endl;
+
+        if (point_number != level_manager._file_level.winning_cups_pos[i])
+        //cout << "p.n = " << point_number << endl;
             return false;
     }
-            cout << "true " << endl;
-
     return true;
 }
 
