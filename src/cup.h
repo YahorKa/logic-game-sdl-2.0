@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 #include "SDL_thread.h"
 #include <thread>
+#include <mutex>
 #include <utility>
 #include "colors.h"
 #include "file_manager.h"
@@ -13,12 +14,11 @@
 #include <list>
 #include <queue>
 
-enum Dijkstra {
-    INF = 0x3f,
-};
+
 class Cup
 {
 public:
+friend class Cups_Board;
     Cup(int x, int y, int w, int h, const SDL_Color &_color);
     Cup();
     // Cup &operator=(Cup &other)

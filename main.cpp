@@ -2,7 +2,7 @@
 #include "cups_board.h"
 #include "file_manager.h"
 
-// nedd to trasfer to enum class settings
+// nedd to add to enum class settings
 const int WIDTH = 800, HEIGHT = 600;
 int mouse_cord_x, mouse_cord_y, button_click = 0;
 SDL_Event windowEvent;

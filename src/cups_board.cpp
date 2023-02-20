@@ -11,7 +11,6 @@ Cups_Board::Cups_Board()
 
 Cups_Board::~Cups_Board()
 {
-    // std::cout << "destructor" << std::endl;
 }
 
 void Cups_Board::init_level(int lvl)
@@ -92,7 +91,7 @@ void Cups_Board::cups_board_render_update(SDL_Renderer *render)
         }
         delete[] implicit_cups;
     }
-    // Draw wining position, please NEED REFACTORING!!!!!
+    // Draw wining position
     for (int i = 0; i < level_manager._file_level.cups_num; i++)
     {
         int x, y, offset_x =400, offset_y=200;
@@ -146,17 +145,12 @@ void Cups_Board::handle_mouse(int x, int y)
                 {
                    start_point = find_number_point(start_rect.x + (rect.w / 2),start_rect.y+ (rect.h / 2) );
                    target_point = it;
-                   vector<int> v = graph.findPathBFS(start_point,target_point);
-                   // std::reverse is not working at c++17 (why?), so well, use queue instead
-                   deque <int> q;
-                   for (auto it : v){
-                    q.push_front(it);                    
-                   }
+                    // std::reverse is not working at c++17 (why?), so well, we'l use deque instead
+                   deque<int> v = graph.findPathBFS(start_point,target_point);
 
-                   thr1 = new std::thread(&Cup::move,std::move(_cups_array[i]),start_point,target_point, move(_free_paths.available_places),std::move(q));
-                   // _free_paths.available_places = {};
+                   thr1 = new std::thread(&Cup::move,std::move(_cups_array[i]),start_point,target_point, move(_free_paths.available_places),std::move(v));
                    thr1->detach();
-                    if (_check_winning_position())
+                    if (check_winning_position())
                     {
                         cout << "You WIN!!!" << endl;
                         _level ++;
@@ -213,7 +207,6 @@ vector<int> Cups_Board::show_available_move(const SDL_Rect *rec)
         {
             if (check_point_free(it.second))
             {
-                // cout << it.second << endl;
                 if (check_point_repeat(available_places,it.second)) available_places.push_back(it.second);
             }
         }
@@ -269,23 +262,21 @@ bool Cups_Board::check_point_free(int point_number)
     return true;
 }
 
-bool Cups_Board::_check_winning_position()
+bool Cups_Board::check_winning_position()
 {
-    cout << "check win pos" <<endl;
     for (int i = 0; i < level_manager._file_level.cups_num; i++)
     {
         int point_number = find_number_point(_cups_array[i]->get_rect()->x + (_cups_array[i]->get_rect()->w) / 2,
                                              _cups_array[i]->get_rect()->y + (_cups_array[i]->get_rect()->h) / 2);
-        cout << "p.n = " << point_number << endl;
-
         if (point_number != level_manager._file_level.winning_cups_pos[i])
-        //cout << "p.n = " << point_number << endl;
             return false;
     }
     return true;
 }
 
 int Cup::smoothy_moving(int start,int end,Cup* cup){
+    std::mutex mtx;
+    mtx.lock();
     SDL_Rect start_rect = Cups_Board::get_rect_point(start);
     SDL_Rect end_rect =  Cups_Board::get_rect_point(end);
     while (!SDL_RectEquals(cup->get_rect(), &end_rect))
@@ -294,5 +285,7 @@ int Cup::smoothy_moving(int start,int end,Cup* cup){
         if (start_rect.y != end_rect.y)  cup->get_rect()->y += (end_rect.y - start_rect.y)/abs(end_rect.y - start_rect.y);
          std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
+    mtx.unlock();
+    // Cups_Board::_check_winning_position();
     return 0;
 }

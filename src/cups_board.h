@@ -31,7 +31,7 @@ public:
     _adjList[dest].push_back(src); // assuming an undirected graph
   }
 
-    vector<int> findPathBFS(int start, int end) {
+    deque<int> findPathBFS(int start, int end) {
         vector<bool> visited(_numVertices, false);
         vector<int> parent(_numVertices, -1);
         queue<int> q;
@@ -55,11 +55,12 @@ public:
             return {}; // end node not found
         }
 
-        vector<int> path;
+        deque <int> path;
         int curr = end;
 
         while (parent[curr] != -1) {
-            path.push_back(curr);
+            path.push_front(curr);                 
+           // path.push_back(curr);
             curr = parent[curr];
         }
 
@@ -77,6 +78,7 @@ public:
   void cups_board_render_update(SDL_Renderer *);
   void handle_mouse(int x, int y);
   static SDL_Rect get_rect_point(int number_point);
+  bool check_winning_position();
 
 private:
   void create_cups();
@@ -85,7 +87,6 @@ private:
   int find_number_point(int, int);
   bool check_point_free(int);
   bool check_point_repeat(vector<int>, int);
-  bool _check_winning_position();
 
   void init_level(int lvl);
   struct Cups_board_free_paths

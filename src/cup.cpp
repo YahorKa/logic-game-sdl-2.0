@@ -18,7 +18,6 @@ void Cup::set_touch(bool touch)
     }
     if (!touch)
     {
-        // _color.g -= 20;
         is_touching = 0;
     }
 }
@@ -27,7 +26,6 @@ bool Cup::get_touch()
 {
     return is_touching;
 }
-
 void Cup::move(int start, int end, vector<int> &&available_move, deque<int> &&path)
 {
     while (!path.empty())
