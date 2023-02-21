@@ -143,13 +143,13 @@ void Cups_Board::handle_mouse(int x, int y)
                 rect = get_rect_point(it);
                 if (SDL_PointInRect(&mouse_cord, &rect))
                 {
-                   start_point = find_number_point(start_rect.x + (rect.w / 2),start_rect.y+ (rect.h / 2) );
-                   target_point = it;
+                    start_point = find_number_point(start_rect.x + (rect.w / 2),start_rect.y+ (rect.h / 2));
+                    target_point = it;
                     // std::reverse is not working at c++17 (why?), so well, we'l use deque instead
-                   deque<int> v = graph.findPathBFS(start_point,target_point);
+                    deque<int> v = graph.findPathBFS(start_point,target_point);
 
-                   thr1 = new std::thread(&Cup::move,std::move(_cups_array[i]),start_point,target_point, move(_free_paths.available_places),std::move(v));
-                   thr1->detach();
+                    thr1 = new std::thread(&Cup::move,std::move(_cups_array[i]),start_point,target_point, move(_free_paths.available_places),std::move(v));
+                    thr1->detach();
                     if (check_winning_position())
                     {
                         cout << "You WIN!!!" << endl;
@@ -276,6 +276,19 @@ bool Cups_Board::check_winning_position()
 
 int Cup::smoothy_moving(int start,int end,Cup* cup){
     std::mutex mtx;
+    std::thread thr2([]{
+    //     for (int i = 0; i < level_manager._file_level.cups_num; i++)
+    // {
+    //     int point_number = find_number_point(_cups_array[i]->get_rect()->x + (_cups_array[i]->get_rect()->w) / 2,
+    //                                          _cups_array[i]->get_rect()->y + (_cups_array[i]->get_rect()->h) / 2);
+    //     if (point_number != level_manager._file_level.winning_cups_pos[i])
+    //         return false;
+    // }
+    // return true;
+        std::cout << "Worker 2 finished" << std::endl;
+        
+    });
+    thr2.join();  
     mtx.lock();
     SDL_Rect start_rect = Cups_Board::get_rect_point(start);
     SDL_Rect end_rect =  Cups_Board::get_rect_point(end);
@@ -283,9 +296,10 @@ int Cup::smoothy_moving(int start,int end,Cup* cup){
     {
         if (start_rect.x != end_rect.x)  cup->get_rect()->x += (end_rect.x - start_rect.x)/abs(end_rect.x - start_rect.x);
         if (start_rect.y != end_rect.y)  cup->get_rect()->y += (end_rect.y - start_rect.y)/abs(end_rect.y - start_rect.y);
-         std::this_thread::sleep_for(std::chrono::milliseconds(5));
+         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
     mtx.unlock();
+
     // Cups_Board::_check_winning_position();
     return 0;
 }

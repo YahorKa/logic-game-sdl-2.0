@@ -87,7 +87,6 @@ private:
   int find_number_point(int, int);
   bool check_point_free(int);
   bool check_point_repeat(vector<int>, int);
-
   void init_level(int lvl);
   struct Cups_board_free_paths
   {
@@ -97,9 +96,9 @@ private:
 
   thread *thr1;
   int _level;
-  int _num_cup_is_checked; // number of cup is cheked [1 ... N]
+  int _num_cup_is_checked; // number of cup is cheked
   Cup **_cups_array;
-  Cup *_implicit_array; // array of available move
+  Cup *_implicit_array; // array of cups, available for moving
   SDL_Renderer *_paths;
   Cups_board_free_paths _free_paths;
   Graph graph;

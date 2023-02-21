@@ -21,7 +21,6 @@ int main(int argc, char *argv[])
         std::cout << "Could not create window: " << SDL_GetError() << std::endl;
         return 1;
     }
-    SDL_Thread *thread;
     Cups_Board cups_board_stage{};
     SDL_Renderer *render = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (render == nullptr)
