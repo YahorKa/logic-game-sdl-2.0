@@ -2,19 +2,22 @@
 
 File_Manager level_manager;
 SDL_colors_t colors_list;
-
-Cups_Board::Cups_Board()
-//    _level{level}
-{
-    init_level(1);
+Cups_Board::Cups_Board(){
+    init_level(_level);
+    //ins_ = this;
 }
 
-Cups_Board::~Cups_Board()
-{
+Cups_Board::~Cups_Board(){
 }
 
-void Cups_Board::init_level(int lvl)
-{
+// functor will check winning position, its not good, but i couldnt use check_wining_position function
+// in move function of cup class  (LEG)
+// bool Cups_Board::operator()(){
+//     cout << "functor is called" << endl;
+//     return check_winning_position();
+// };
+
+void Cups_Board::init_level(int lvl){
     // we started init from getting data level
     level_manager.get_data(lvl);
     create_cups();
@@ -22,8 +25,16 @@ void Cups_Board::init_level(int lvl)
     graph.addEdgesFromPairs(level_manager._file_level.points_num+1, level_manager._file_level.list_of_pair_connections);
 }
 
-void Cups_Board::create_cups()
-{
+void Cups_Board::create_cups(){
+    if (_cups_array){
+        for (int i = 0; i < sizeof(_cups_array)/sizeof(_cups_array[0]); i++) {
+            delete _cups_array[i];
+            _cups_array[i] = nullptr;
+        }
+        delete[] _cups_array;
+        _cups_array = nullptr;
+    }
+    
     _cups_array = new Cup *[level_manager._file_level.cups_num];
     for (int i = 0; i < level_manager._file_level.cups_num; i++)
     {
@@ -36,8 +47,7 @@ void Cups_Board::create_cups()
     }
 }
 
-void Cups_Board::create_paths(SDL_Renderer *render)
-{
+void Cups_Board::create_paths(SDL_Renderer *render){
     // set color of paths
     SDL_SetRenderDrawColor(render, 135, 206, 250, 0);
     //_paths_cord.resize(level_manager._file_level.number_of_connections);
@@ -57,8 +67,14 @@ void Cups_Board::create_paths(SDL_Renderer *render)
     }
 }
 
-void Cups_Board::cups_board_render_update(SDL_Renderer *render)
-{
+void Cups_Board::cups_board_render_update(SDL_Renderer *render){
+    // check winning position
+     if (check_winning_position())
+        {
+            cout << "You WIN!!!" << endl;
+            init_level(++_level);
+            // Clear cups_Board
+        }
     SDL_Rect rect; // rect to draw available move
     // Draw paths. Unfothenetly we should perfom equlations every tick, the beter way is get away this func from init func
     create_paths(render);
@@ -78,8 +94,7 @@ void Cups_Board::cups_board_render_update(SDL_Renderer *render)
     }
 
     // create available cups to move
-    if (_free_paths.available_places.capacity())
-    {
+    if (_free_paths.available_places.capacity())    {
         Cup *implicit_cups = new Cup[_free_paths.available_places.capacity()];
         SDL_SetRenderDrawColor(render, _free_paths.color->r, _free_paths.color->g, _free_paths.color->b, 255);
         for (auto it = _free_paths.available_places.begin(); it != _free_paths.available_places.end(); ++it)
@@ -92,8 +107,7 @@ void Cups_Board::cups_board_render_update(SDL_Renderer *render)
         delete[] implicit_cups;
     }
     // Draw wining position
-    for (int i = 0; i < level_manager._file_level.cups_num; i++)
-    {
+    for (int i = 0; i < level_manager._file_level.cups_num; i++)    {
         int x, y, offset_x =400, offset_y=200;
         SDL_Rect rect;
         pair<int,int> xy_cord = level_manager._file_level.points_array[level_manager._file_level.winning_cups_pos[i] - 1];
@@ -106,8 +120,7 @@ void Cups_Board::cups_board_render_update(SDL_Renderer *render)
     }
 }
 
-void Cups_Board::handle_mouse(int x, int y)
-{
+void Cups_Board::handle_mouse(int x, int y){
     SDL_Point mouse_cord{x, y};
     int num = level_manager._file_level.cups_num;
     for (int i = 0; i < num; i++)
@@ -146,16 +159,9 @@ void Cups_Board::handle_mouse(int x, int y)
                     start_point = find_number_point(start_rect.x + (rect.w / 2),start_rect.y+ (rect.h / 2));
                     target_point = it;
                     // std::reverse is not working at c++17 (why?), so well, we'l use deque instead
-                    deque<int> v = graph.findPathBFS(start_point,target_point);
-
-                    thr1 = new std::thread(&Cup::move,std::move(_cups_array[i]),start_point,target_point, move(_free_paths.available_places),std::move(v));
+                    deque<int> move_points = graph.findPathBFS(start_point,target_point);
+                    thr1 = new std::thread(&Cup::move_cup,std::move(_cups_array[i]),start_point,target_point, move(_free_paths.available_places),std::move(move_points));
                     thr1->detach();
-                    if (check_winning_position())
-                    {
-                        cout << "You WIN!!!" << endl;
-                        _level ++;
-                        // Clear cups_Board
-                    }
                     return;
                 }
             }
@@ -165,15 +171,13 @@ void Cups_Board::handle_mouse(int x, int y)
 }
 
 // search number position in points array via coordinate
-int Cups_Board::find_number_point(int rect_x, int rect_y)
-{
-    //NEED REFACTORING!!!
+int Cups_Board::find_number_point(int rect_x, int rect_y){
     for (auto it = level_manager._file_level.points_array.begin(); it != level_manager._file_level.points_array.end(); it++)
     {
 
         int x = (*it).first;
         int y = (*it).second;
-        SDL_Rect rect {rect_x , rect_y, 50 , 50};
+        SDL_Rect rect {rect_x , rect_y, 50 , 50}; // magic numbers 50! (change)
         SDL_Point p {x,y};
         if (SDL_PointInRect(&p, &rect)){
             return (it - level_manager._file_level.points_array.begin() + 1);
@@ -184,8 +188,7 @@ int Cups_Board::find_number_point(int rect_x, int rect_y)
     return -1;
 }
 
-SDL_Rect Cups_Board::get_rect_point(int number_point)
-{
+SDL_Rect Cups_Board::get_rect_point(int number_point){
     int x, y;
     string val;
     pair<int, int> pair(level_manager._file_level.points_array[number_point - 1]);
@@ -194,8 +197,7 @@ SDL_Rect Cups_Board::get_rect_point(int number_point)
     return SDL_Rect{x - 25, y - 25, 50, 50};
 }
 
-vector<int> Cups_Board::show_available_move(const SDL_Rect *rec)
-{
+vector<int> Cups_Board::show_available_move(const SDL_Rect *rec){
     int number_point = find_number_point(rec->x + (rec->w / 2), rec->y + (rec->h / 2));
     // chek all paths
     vector<int> available_places{};
@@ -238,8 +240,7 @@ vector<int> Cups_Board::show_available_move(const SDL_Rect *rec)
     //  draw availible cups
 }
 
-bool Cups_Board::check_point_repeat(vector<int> v, int num)
-{
+bool Cups_Board::check_point_repeat(vector<int> v, int num){
     for (auto it : v)
     {
         int count;
@@ -249,8 +250,7 @@ bool Cups_Board::check_point_repeat(vector<int> v, int num)
     return 1;
 }
 
-bool Cups_Board::check_point_free(int point_number)
-{
+bool Cups_Board::check_point_free(int point_number){
     for (int i = 0; i < level_manager._file_level.cups_num; i++)
     {
         if ((point_number) == find_number_point(_cups_array[i]->get_rect()->x + (_cups_array[i]->get_rect()->w) / 2,
@@ -262,13 +262,14 @@ bool Cups_Board::check_point_free(int point_number)
     return true;
 }
 
-bool Cups_Board::check_winning_position()
-{
+bool Cups_Board::check_winning_position(){
+
+
     for (int i = 0; i < level_manager._file_level.cups_num; i++)
     {
         int point_number = find_number_point(_cups_array[i]->get_rect()->x + (_cups_array[i]->get_rect()->w) / 2,
                                              _cups_array[i]->get_rect()->y + (_cups_array[i]->get_rect()->h) / 2);
-        if (point_number != level_manager._file_level.winning_cups_pos[i])
+        if ((point_number != level_manager._file_level.winning_cups_pos[i])||(_cups_array[i]->is_moving))
             return false;
     }
     return true;
@@ -276,19 +277,6 @@ bool Cups_Board::check_winning_position()
 
 int Cup::smoothy_moving(int start,int end,Cup* cup){
     std::mutex mtx;
-    std::thread thr2([]{
-    //     for (int i = 0; i < level_manager._file_level.cups_num; i++)
-    // {
-    //     int point_number = find_number_point(_cups_array[i]->get_rect()->x + (_cups_array[i]->get_rect()->w) / 2,
-    //                                          _cups_array[i]->get_rect()->y + (_cups_array[i]->get_rect()->h) / 2);
-    //     if (point_number != level_manager._file_level.winning_cups_pos[i])
-    //         return false;
-    // }
-    // return true;
-        std::cout << "Worker 2 finished" << std::endl;
-        
-    });
-    thr2.join();  
     mtx.lock();
     SDL_Rect start_rect = Cups_Board::get_rect_point(start);
     SDL_Rect end_rect =  Cups_Board::get_rect_point(end);
@@ -296,10 +284,8 @@ int Cup::smoothy_moving(int start,int end,Cup* cup){
     {
         if (start_rect.x != end_rect.x)  cup->get_rect()->x += (end_rect.x - start_rect.x)/abs(end_rect.x - start_rect.x);
         if (start_rect.y != end_rect.y)  cup->get_rect()->y += (end_rect.y - start_rect.y)/abs(end_rect.y - start_rect.y);
-         std::this_thread::sleep_for(std::chrono::milliseconds(1));
+         std::this_thread::sleep_for(std::chrono::milliseconds(3));
     }
     mtx.unlock();
-
-    // Cups_Board::_check_winning_position();
     return 0;
 }

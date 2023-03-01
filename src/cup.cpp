@@ -26,13 +26,15 @@ bool Cup::get_touch()
 {
     return is_touching;
 }
-void Cup::move(int start, int end, vector<int> &&available_move, deque<int> &&path)
+void Cup::move_cup(int start, int end, vector<int> &&available_move, deque<int> &&path)
 {
+    is_moving = 1;
     while (!path.empty())
     { 
         smoothy_moving(start, path.front(), this);
         start = path.front();
         path.pop_front();
-        return move(start, end, std::move(available_move), std::move(path));
+        return move_cup(start, end, std::move(available_move), std::move(path));
     }
+    is_moving = 0;
 }

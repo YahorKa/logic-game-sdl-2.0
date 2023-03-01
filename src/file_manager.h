@@ -29,13 +29,12 @@ public:
         vector<pair<int,int>>   list_of_pair_connections;
     } Enter_Data;
 
-    // inline Enter_Data &get_e_task()
-    // {
-    //     return _file_level;
-    // }
+    inline Enter_Data &get_file_level()
+    {
+        return _file_level;
+    }
 
 private:
-    ifstream file_stream; // read level file
     Enter_Data _file_level;
     filesystem::path _level_base_path;
 

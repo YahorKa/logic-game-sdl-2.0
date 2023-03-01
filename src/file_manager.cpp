@@ -2,6 +2,8 @@
 
 void File_Manager::get_data(int level)
 {
+    cout << "level" << level <<endl;
+    ifstream file_stream; // read level file
     for (auto &iter : filesystem::current_path())
     {
         if (iter.compare("build"))
@@ -16,6 +18,7 @@ void File_Manager::get_data(int level)
         std::cout << "cant open" << std::endl;
     }
     copy_lvl_fields(file_stream);
+    file_stream.close();
 }
 
 void File_Manager::copy_lvl_fields(ifstream &fields)
