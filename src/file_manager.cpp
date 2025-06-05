@@ -3,16 +3,22 @@
 void File_Manager::get_data(int level)
 {
     cout << "level" << level <<endl;
+    cout << "filesystem::current_path()" << filesystem::current_path() <<endl;
     ifstream file_stream; // read level file
-    for (auto &iter : filesystem::current_path())
-    {
-        if (iter.compare("build"))
-        {
-            _level_base_path /= iter;
-        }
-    }
-    _level_base_path /= (std::to_string(level) + "level.txt");
-    file_stream.open(_level_base_path);
+    // for (auto iter : filesystem::current_path())
+    // {
+    //      cout << "level" << level <<endl;
+    //     if (iter.compare("build"))
+    //     {
+    //         _level_base_path /= iter;
+    //     }
+    // }  
+    _level_base_path = filesystem::current_path().parent_path();
+    filesystem::path levelFilePath = _level_base_path /= (std::to_string(level) + "level.txt");
+
+    std::cout << "Trying to open file: " << levelFilePath << std::endl;
+
+    file_stream.open(levelFilePath);
     if (!file_stream)
     {
         std::cout << "cant open" << std::endl;
